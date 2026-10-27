@@ -10,11 +10,12 @@ para los servidores de Asystec. Licencia AGPL-3.0.
 
 - [Descargar la última versión de Asystec Desk para Windows](https://github.com/asystec-io/asystec-desk/releases/latest/download/Asystec-Desk-Setup.exe)
 - [Código completo del cliente](app/)
-- [Cambios y validación de la versión 0.1.2](desktop/RELEASE-0.1.2.md)
+- [Cambios y validación de la versión 0.1.3](desktop/RELEASE-0.1.3.md)
 - [Compilación y herramientas](desktop/README.md)
 
-La versión 0.1.2 incorpora la identidad final «Dos ventanas» y la ventana para
-copiar ID y contraseña. El repositorio y las descargas son públicos. El
+La versión 0.1.3 simplifica el instalador: bienvenida con aviso al continuar
+y licencia consultable, sin marcar «Acepto». Incluye la identidad final
+«Dos ventanas» y la ventana para copiar ID y contraseña. El repositorio y las descargas son públicos. El
 instalador todavía no tiene firma digital propia.
 
 El enlace de descarga anterior se mantiene entre versiones. Para publicar una

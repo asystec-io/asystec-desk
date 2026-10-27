@@ -1,0 +1,54 @@
+{
+  "release": "v0.1.3",
+  "at_utc": "2026-10-27T05:45:13.566146+00:00",
+  "result": "PASS",
+  "setup_sha256": "494b171351aa8bdbf171c60c45a71df0e7f503d811c95c9547882a811275b3e0",
+  "client_sha256": "628d59131e3b31e2583d0560c3480a9c5258dc6a9db47513301b9bd9db7da395",
+  "native_runtime_unchanged_from": "v0.1.2",
+  "sandbox": {
+    "at_utc": "2026-10-27T05:41:36.3575886Z",
+    "result": "PASS",
+    "checks": {
+      "windows_product_brand": "PASS",
+      "installation_and_running_service_with_spaces": "PASS",
+      "automatic_startup": "PASS",
+      "compiled_server_key_relay_and_empty_api": "PASS",
+      "client_id": "PASS",
+      "installer_created_encrypted_admin_only_credentials": "PASS",
+      "connection_details_shortcut": "PASS",
+      "reinstall_preserves_id_and_password": "PASS",
+      "installer_password_exported_encrypted_for_qa": "PASS",
+      "service_restart_preserves_id": "PASS",
+      "sandbox_to_asystec_tcp_21115": "PASS",
+      "sandbox_to_asystec_tcp_21116": "PASS",
+      "sandbox_to_asystec_tcp_21117": "PASS"
+    },
+    "exe_sha256": "628d59131e3b31e2583d0560c3480a9c5258dc6a9db47513301b9bd9db7da395",
+    "product_name": "Asystec Desk",
+    "setup_sha256": "494b171351aa8bdbf171c60c45a71df0e7f503d811c95c9547882a811275b3e0",
+    "client_id": "498030141",
+    "remote_desktop_session": "PENDING_SEPARATE_TEST"
+  },
+  "visual": {
+    "result": "PASS",
+    "at_utc": "2026-10-27T05:45:12.4661353Z",
+    "setup_sha256": "494b171351aa8bdbf171c60c45a71df0e7f503d811c95c9547882a811275b3e0",
+    "welcome_next_enabled_without_checkbox": "PASS",
+    "license_opens_from_bundled_text": "PASS",
+    "license_fits_window_with_visible_close_button": "PASS",
+    "license_close_returns_to_welcome": "PASS",
+    "next_advances_directly_to_ready": "PASS",
+    "interactive_install_completes": "PASS",
+    "finish_opens_masked_credentials": "PASS"
+  },
+  "embedded_installer_icon": "PASS",
+  "regression_surface": [
+    "installer welcome page",
+    "optional bundled license viewer"
+  ],
+  "limitations": [
+    "No Authenticode signature",
+    "Windows Sandbox validation does not cover all Windows versions",
+    "Remote desktop session not repeated for this installer-only change; unchanged native client passed in v0.1.2"
+  ]
+}

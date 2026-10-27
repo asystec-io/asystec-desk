@@ -6,6 +6,10 @@ binarios oficiales de RustDesk. No son el mismo producto ni comparten pruebas.
 
 ## Estado
 
+`0.1.3` sustituye la pagina obligatoria de licencia por una bienvenida breve
+con aviso al pulsar Siguiente. El texto completo se consulta desde un enlace
+local, sin Internet ni casillas obligatorias. El cliente es el mismo de 0.1.2.
+
 `0.1.2` integra el paquete final de marca "Dos ventanas": iconos Windows,
 bandeja, logos de tema claro/oscuro, azul Asystec y asistente de instalacion.
 La ventana de ID y contrasena incorpora el logo y los colores de la marca.
