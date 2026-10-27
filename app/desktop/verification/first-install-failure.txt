@@ -1,0 +1,1 @@
+Failed with error: Application name must match [a-zA-Z0-9-]+

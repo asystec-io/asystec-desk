@@ -1,0 +1,22 @@
+{
+  "checked_at_utc": "2026-10-27T01:59:26.0197041Z",
+  "visual_studio_path": "C:\\BuildTools",
+  "rust": "rustc 1.75.0 (82e1608df 2023-12-21)",
+  "cargo_expand": "cargo-expand 1.0.95",
+  "bridge": "flutter_rust_bridge_codegen 1.80.1",
+  "cmake": "cmake version 3.31.6",
+  "nasm": "NASM version 2.16.03 compiled on Apr 17 2024",
+  "vcpkg_commit": "9e593bb18ea69cc5095e012465dcd675a822ed0d",
+  "flutter_release": {
+    "hash": "dec2ee5c1f98f8e84a7d5380c05eb8a3d0a81668",
+    "channel": "stable",
+    "version": "3.24.5",
+    "dart_sdk_version": "3.5.4",
+    "dart_sdk_arch": "x64",
+    "release_date": "2024-11-14T01:24:28.011172Z",
+    "archive": "stable/windows/flutter_windows_3.24.5-stable.zip",
+    "sha256": "b8a7485acd3c6fb23a76b7ac09f89e8d93d62fbff7147c6f5f8c5686d949eeac"
+  },
+  "engine_sha256": "ec8cabf36ee4ff24c8d98de25b00e70781eb03876265aee84d0fe554a110036e",
+  "vs_installer_signature": "Valid"
+}

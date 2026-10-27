@@ -1,0 +1,15 @@
+{
+  "checked_at_utc": "2026-10-27T01:59:21.852781+00:00",
+  "host": "184.197.59.221",
+  "checks": {
+    "tcp_21115": "PASS",
+    "tcp_21116": "PASS",
+    "tcp_21117": "PASS",
+    "nat_protocol_21115": "PASS",
+    "nat_protocol_21116": "PASS",
+    "udp_21116_registration_response": "PASS",
+    "relay_bidirectional_payload": "PASS",
+    "relay_rejects_missing_key": "PASS"
+  },
+  "scope": "External protocol and relay checks; no desktop session attempted."
+}

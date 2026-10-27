@@ -1,0 +1,11 @@
+﻿{
+    "at_utc":  "2026-10-27T02:21:10.9354216Z",
+    "result":  "FAIL",
+    "checks":  {
+                   "windows_product_brand":  "PASS"
+               },
+    "exe_sha256":  "4fc11f66e2b9aa03aa69d2277d72a3613e1d25831955fc5df3a252df2286c273",
+    "product_name":  "Asystec Desk",
+    "setup_sha256":  "dacc4223c049f812f64b94f1b4e52a69515547fc4fcf418ef4c9c1273e84770d",
+    "error":  "Servicio no esta activo."
+}

@@ -1,0 +1,26 @@
+SOPORTE ASYSTEC - INSTALADOR WINDOWS
+
+1. Extrae el ZIP completo.
+2. Abre Asystec-Soporte-Setup.exe.
+3. Acepta el permiso de administrador y sigue el asistente.
+4. Al finalizar, deja marcada la opcion para ver el ID y la contrasena.
+
+El instalador incluye RustDesk 1.5.0 y configura automaticamente el servidor
+de Asystec. Genera una contrasena permanente distinta para cada equipo.
+Al repetirlo conserva el ID y la contrasena guardada.
+
+Requisitos: Windows 10/11 de 64 bits Intel/AMD y permisos de administrador.
+La conexion remota requiere acceso a Internet. Guarda tu trabajo y termina
+cualquier sesion remota de RustDesk antes de ejecutar el instalador.
+
+El EXE de Asystec no tiene firma digital propia. Windows puede mostrar
+"editor desconocido". Los binarios RustDesk incluidos conservan su firma oficial.
+
+Para volver a consultar las credenciales, ejecuta el mismo asistente y marca
+la opcion de ver el ID y la contrasena al finalizar.
+
+Descarga directa sin ZIP:
+https://asystec-apps.s3.us-east-2.amazonaws.com/updates/herramientas/Asystec-Soporte-Setup.exe
+
+RustDesk conserva su nombre y licencia AGPL v3. Codigo fuente de esta version:
+https://github.com/rustdesk/rustdesk/tree/1.5.0

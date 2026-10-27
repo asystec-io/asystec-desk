@@ -1,0 +1,30 @@
+ASYSTEC - SOPORTE PORTABLE CON RUSTDESK
+Windows 10/11 de 64 bits (Intel o AMD).
+
+1. Extrae todos los archivos del ZIP.
+2. Abre ABRIR-SOPORTE-ASYSTEC.cmd o el archivo .exe de nombre largo.
+3. Comparte el ID que aparece con Asystec y acepta la solicitud de conexion.
+
+El archivo es RustDesk oficial 1.5.0 sin modificar, con su firma original.
+El nombre del ejecutable contiene el servidor y la clave publica de Asystec.
+NO RENOMBRES EL EJECUTABLE: al cambiar su nombre se pierde esta configuracion.
+Si Windows consulta por permisos para una funcion, revisa su solicitud.
+
+Servidor: 184.197.59.221
+Clave: 6o6MWnTv2Vh6l+1oCrfEnlUSNQmMXaaLpqctaNcCulg=
+El relay se obtiene del mismo servidor.
+
+IMPORTANTE: esta opcion esta pensada para equipos sin una configuracion previa
+de otro servidor RustDesk. Si RustDesk ya esta instalado o configurado, sus
+ajustes previos pueden tener prioridad. En ese caso utiliza el paquete
+Asystec-RustDesk-Instalador.zip, que aplica y verifica los ajustes.
+
+El portable sirve para asistencia puntual. No instala el servicio permanente
+por el simple hecho de abrirlo. No incluye una contrasena comun ni acceso
+automatico sin la autorizacion configurada en el equipo.
+
+Licencia del programa: GNU AGPL v3, incluida en LICENSE-RUSTDESK.txt.
+Binarios oficiales y codigo fuente exacto:
+https://github.com/rustdesk/rustdesk/releases/tag/1.5.0
+https://github.com/rustdesk/rustdesk/tree/1.5.0
+https://github.com/rustdesk/rustdesk/archive/refs/tags/1.5.0.zip

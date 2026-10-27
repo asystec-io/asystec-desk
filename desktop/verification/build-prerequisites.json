@@ -1,0 +1,18 @@
+{
+    "checked_at_utc":  "2026-10-27T01:37:36.2093114Z",
+    "ready":  false,
+    "missing":  [
+                    "cargo",
+                    "rustc",
+                    "flutter",
+                    "flutter_rust_bridge_codegen",
+                    "cargo-expand",
+                    "cmake",
+                    "nasm",
+                    "Visual Studio 2022 con Desktop development with C++ y Windows SDK",
+                    "VCPKG_ROOT con vcpkg.exe (commit 9e593bb18ea69cc5095e012465dcd675a822ed0d)",
+                    "LIBCLANG_PATH con LLVM 15.0.6/libclang.dll"
+                ],
+    "source":  "C:\\Users\\bryan\\OneDrive\\Documents\\ChatGPT\\Asystec Desk\\.build\\asystec-desk-source",
+    "status":  "NOT_COMPILED"
+}

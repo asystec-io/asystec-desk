@@ -1,0 +1,85 @@
+ASYSTEC - INSTALACION AUTOMATICA DE RUSTDESK
+Windows 10/11 de 64 bits (Intel o AMD).
+
+INSTALADOR EXE (RECOMENDADO)
+1. Abre Asystec-Soporte-Setup.exe y acepta el permiso de administrador.
+2. Sigue el asistente y pulsa Instalar.
+3. Al finalizar, deja marcada "Ver ID y contrasena de este equipo".
+4. Usa "Mostrar contrasena" o "Copiar ID y contrasena" y guarda los datos.
+5. Cierra la ventana. Puedes abrir RustDesk desde el escritorio.
+No es necesario extraer archivos. El MSI oficial viene incluido en el EXE.
+Para volver a consultar las credenciales puedes repetir el mismo instalador.
+
+PAQUETE ZIP (ALTERNATIVO)
+Extrae todos los archivos y abre INSTALAR-ASYSTEC.cmd. Acepta el permiso
+de administrador y espera la ventana de credenciales. VER-CREDENCIALES.cmd
+permite consultarlas de nuevo sin reinstalar.
+
+El EXE de Asystec no tiene firma digital propia. El MSI y el cliente RustDesk
+incluidos conservan la firma oficial PURSLANE y se verifican antes de usarse.
+La conexion al servidor de Asystec y la verificacion de confianza de Windows
+requieren acceso a Internet.
+
+Cada equipo recibe automaticamente una contrasena aleatoria de 24 caracteres.
+Permanece entre conexiones y reinicios. Si repites el instalador, reutiliza y
+vuelve a asignar la misma contrasena guardada en este Windows.
+Tambien funciona sobre los equipos que ya tienen el instalador anterior.
+
+Para consultar los datos despues, abre VER-CREDENCIALES.cmd y acepta UAC.
+Conserva junto a ese archivo Instalar-Asystec.ps1. No necesitas guardar el MSI
+para consultar los datos. El script solo muestra los datos al administrador
+local; no los envia automaticamente a Asystec ni los incluye en el registro.
+Comparte ID y contrasena unicamente con la persona que atendera tu soporte:
+permiten conectar sin tener que aceptar cada sesion.
+
+El paquete instala RustDesk oficial 1.5.0 y configura:
+Servidor ID: 184.197.59.221
+Relay: 184.197.59.221:21117
+Clave: 6o6MWnTv2Vh6l+1oCrfEnlUSNQmMXaaLpqctaNcCulg=
+API: vacio
+
+El MSI oficial esta incluido. Si falta, el script lo descarga desde el
+repositorio oficial de RustDesk en GitHub. Se verifican su SHA256 y firma.
+Se necesita Internet para conectar y para comprobar certificados.
+
+Si ya tienes RustDesk de esta version o una posterior, se configura esa
+instalacion; no se rebaja su version. El servicio queda con inicio automatico.
+Se comprueba que los cuatro ajustes hayan quedado guardados.
+El script guarda un registro y los ajustes previos de servidor en TEMP;
+la ruta aparece en el resultado. La contrasena se genera al ejecutar el script;
+el ZIP no contiene una contrasena compartida.
+Se utiliza la contrasena permanente y se mantiene la aceptacion manual.
+RustDesk confirma la asignacion y se vuelven a leer ambos ajustes.
+
+La copia para consulta se cifra con Windows DPAPI, vinculada a este Windows,
+en %ProgramData%\Asystec\RustDesk\credenciales.dat. La carpeta solo permite
+acceso a Administradores y SYSTEM. No la copies a otros equipos ni la incluyas
+en imagenes clonadas. Conservala para mantener la contrasena al reinstalar.
+Si el archivo esta danado, el script informa un error sin reemplazarlo.
+Si cambias la contrasena manualmente en RustDesk, el visor sigue mostrando la
+ultima guardada por el instalador; repetir el instalador la vuelve a asignar.
+Reinstalar Windows o eliminar esa copia hace que se genere una nueva.
+
+No lo ejecutes durante una sesion de soporte activa: instalar, actualizar o
+cambiar el servidor puede interrumpirla. El instalador no reinicia Windows
+automaticamente. Si el equipo solicita un reinicio, reinicia y ejecuta otra vez.
+
+Para usar solo el script, conserva Instalar-Asystec.ps1 y ejecuta:
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Instalar-Asystec.ps1
+
+Para revisar la descarga sin instalar ni cambiar la configuracion:
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Instalar-Asystec.ps1 -ValidateOnly
+
+Para desinstalar: Configuracion de Windows > Aplicaciones > RustDesk.
+La copia cifrada de Asystec se conserva aunque desinstales RustDesk.
+Para volver a contrasena temporal: RustDesk > Configuracion > Seguridad.
+Para volver a otro servidor: RustDesk > Configuracion > Red; los valores
+anteriores estan en el archivo .previous-server.json indicado por el script.
+
+RustDesk se distribuye sin modificaciones; Asystec aporta este script y
+la configuracion del servidor. La aplicacion conserva su nombre RustDesk.
+Licencia del programa: GNU AGPL v3, incluida en LICENSE-RUSTDESK.txt.
+Binarios oficiales y codigo fuente exacto:
+https://github.com/rustdesk/rustdesk/releases/tag/1.5.0
+https://github.com/rustdesk/rustdesk/tree/1.5.0
+https://github.com/rustdesk/rustdesk/archive/refs/tags/1.5.0.zip

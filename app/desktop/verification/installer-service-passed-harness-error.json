@@ -1,0 +1,13 @@
+﻿{
+    "at_utc":  "2026-10-27T02:36:26.5847032Z",
+    "result":  "FAIL",
+    "checks":  {
+                   "windows_product_brand":  "PASS",
+                   "installation_and_running_service_with_spaces":  "PASS",
+                   "automatic_startup":  "PASS"
+               },
+    "exe_sha256":  "7254fef9e6711c29a92e39c452f0341b701e8fa0e0168c1f71243045d43a0730",
+    "product_name":  "Asystec Desk",
+    "setup_sha256":  "03e5e7dafbaf9c42e70f6a302842d47abed37d2c842a306addcfe719c38528c1",
+    "error":  "Cannot find path \u0027C:\\Windows\\system32\\--option\u0027 because it does not exist."
+}
