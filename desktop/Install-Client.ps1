@@ -67,6 +67,21 @@ try {
         throw "El servicio usa una ruta distinta de la instalacion: $($service.PathName)"
     }
     if ((Get-FileHash -LiteralPath $exe).Hash -ne (Get-FileHash -LiteralPath $installed).Hash) { throw 'El archivo instalado no coincide con el paquete.' }
+    $detailsScript = Join-Path $InstallDirectory 'Connection-Details.ps1'
+    Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Connection-Details.ps1') -Destination $detailsScript -Force
+    . $detailsScript
+    Initialize-ConnectionDetails $installed
+    $programs = [Environment]::GetFolderPath('CommonPrograms')
+    $shortcutDirectory = Join-Path $programs 'Asystec Desk'
+    New-Item -ItemType Directory -Path $shortcutDirectory -Force | Out-Null
+    $shell = New-Object -ComObject WScript.Shell
+    $shortcut = $shell.CreateShortcut((Join-Path $shortcutDirectory 'Ver datos de conexion.lnk'))
+    $shortcut.TargetPath = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
+    $shortcut.Arguments = '-NoProfile -STA -WindowStyle Hidden -ExecutionPolicy Bypass -File "' + $detailsScript + '" -ShowCredentials'
+    $shortcut.WorkingDirectory = $InstallDirectory
+    $shortcut.IconLocation = $installed + ',0'
+    $shortcut.Save()
+    Write-InstallLog 'Credenciales propias del equipo guardadas y autorizacion verificada.'
     Write-InstallLog 'SUCCESS: service and installed executable verified.'
     exit 0
 } catch {

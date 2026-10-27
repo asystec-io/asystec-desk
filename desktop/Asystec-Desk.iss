@@ -11,7 +11,7 @@
 [Setup]
 AppId=AsystecDeskBootstrap
 AppName=Asystec Desk
-AppVersion=0.1.1
+AppVersion=0.1.1.2
 AppPublisher=Asystec
 AppPublisherURL=https://asystec.io
 DefaultDirName={autopf}\Asystec Desk
@@ -36,9 +36,17 @@ VersionInfoDescription=Asystec Desk - Instalador de soporte remoto
 [Languages]
 Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 
+[Messages]
+spanish.FinishedLabel=Asystec Desk está instalado y los datos de conexión están listos.%n%nAl pulsar Finalizar se abrirá la ventana para copiar el ID y la contraseña. También podrás abrirla desde Inicio > Asystec Desk > Ver datos de conexion.
+spanish.FinishedLabelNoIcons=Asystec Desk está instalado y los datos de conexión están listos.%n%nAl pulsar Finalizar se abrirá la ventana para copiar el ID y la contraseña. También podrás abrirla desde Inicio > Asystec Desk > Ver datos de conexion.
+
 [Files]
 Source: "{#BundleDir}\*"; DestDir: "{tmp}\AsystecDeskPayload"; Excludes: "*.zip"; Flags: recursesubdirs createallsubdirs ignoreversion
 Source: "{#DesktopDir}\Install-Client.ps1"; DestDir: "{tmp}"; Flags: ignoreversion
+Source: "{#DesktopDir}\Connection-Details.ps1"; DestDir: "{tmp}"; Flags: ignoreversion
+
+[Run]
+Filename: "{sysnative}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -STA -WindowStyle Hidden -ExecutionPolicy Bypass -File ""{commonpf64}\Asystec Desk\Connection-Details.ps1"" -ShowCredentials"; Description: "Ver ID y contraseña de este equipo"; Flags: postinstall skipifsilent runhidden runascurrentuser nowait; Check: WasInstalled
 
 [Code]
 var
@@ -48,6 +56,11 @@ var
 function GetCustomSetupExitCode: Integer;
 begin
   if InstallationFailed then Result := 12 else Result := 0;
+end;
+
+function WasInstalled: Boolean;
+begin
+  Result := not InstallationFailed and FileExists(ExpandConstant('{commonpf64}\Asystec Desk\Connection-Details.ps1'));
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
@@ -64,7 +77,7 @@ begin
     OperationLog := GetTempDir + 'Asystec-Desk-' + GetDateTimeString('yyyymmdd-hhnnss', '-', ':') + '-' + IntToStr(Random(1000000)) + '.log';
     Log('Registro de instalacion: ' + OperationLog);
     Arguments := '-NoProfile -ExecutionPolicy Bypass -File "' + ExpandConstant('{tmp}\Install-Client.ps1') + '" -PayloadDirectory "' + ExpandConstant('{tmp}\AsystecDeskPayload') + '" -InstallDirectory "' + ExpandConstant('{commonpf64}\Asystec Desk') + '" -LogPath "' + OperationLog + '"';
-    if not Exec(ExpandConstant('{sysnative}\WindowsPowerShell\v1.0\powershell.exe'), Arguments, '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+    if not Exec(ExpandConstant('{sysnative}\WindowsPowerShell\v1.0\powershell.exe'), Arguments, ExpandConstant('{tmp}'), SW_HIDE, ewWaitUntilTerminated, ResultCode) then
       RaiseException('No se pudo iniciar la instalacion de Asystec Desk.');
     if ResultCode <> 0 then
     begin
