@@ -32,14 +32,19 @@ try {
     $report.product_name = (Get-Item -LiteralPath $artifact).VersionInfo.ProductName
     if ($report.product_name -ne 'Asystec Desk') { throw 'ProductName incorrecto.' }
     $checks.windows_product_brand = 'PASS'
+    $installInfo = New-Object Diagnostics.ProcessStartInfo
+    $installInfo.UseShellExecute = $false
+    $installInfo.CreateNoWindow = $true
     if (Test-Path -LiteralPath 'C:\AsystecQAInput\Asystec-Desk-Setup.exe') {
         $report.setup_sha256 = (Get-FileHash -LiteralPath 'C:\AsystecQAInput\Asystec-Desk-Setup.exe').Hash.ToLowerInvariant()
-        $install = Start-Process -FilePath 'C:\AsystecQAInput\Asystec-Desk-Setup.exe' -ArgumentList '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART' -WindowStyle Hidden -PassThru
+        $installInfo.FileName = 'C:\AsystecQAInput\Asystec-Desk-Setup.exe'
+        $installInfo.Arguments = '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART'
     } else {
-        $install = Start-Process -FilePath $artifact -ArgumentList '--silent-install' -WindowStyle Hidden -PassThru
+        $installInfo.FileName = $artifact
+        $installInfo.Arguments = '--silent-install'
     }
-    if (-not $install.WaitForExit(120000)) { throw 'Instalacion no termino.' }
-    $install.Refresh()
+    $install = [Diagnostics.Process]::Start($installInfo)
+    if (-not $install.WaitForExit(180000)) { throw 'Instalacion no termino.' }
     if ($install.ExitCode -ne 0) { throw "Instalador devolvio $($install.ExitCode)." }
     $script:installed = 'C:\Program Files\Asystec Desk\Asystec Desk.exe'
     $service = $null
@@ -65,13 +70,27 @@ try {
     if ($id -notmatch '^\d{6,}$') { throw 'No se obtuvo ID valido.' }
     $report.client_id = $id
     $checks.client_id = 'PASS'
-    $random = New-Object byte[] 16
-    $rng = [Security.Cryptography.RandomNumberGenerator]::Create()
-    try { $rng.GetBytes($random) } finally { $rng.Dispose() }
-    $password = ([BitConverter]::ToString($random)).Replace('-','')
-    if ((Invoke-DeskCli @('--password',$password)) -notmatch 'Done!') { throw 'No se pudo configurar la credencial de prueba.' }
-    Invoke-DeskCli @('--option','verification-method','use-permanent-password') | Out-Null
-    Invoke-DeskCli @('--option','approve-mode','password-click') | Out-Null
+    . 'C:\Program Files\Asystec Desk\Connection-Details.ps1'
+    $credentialPath = Join-Path $env:ProgramData 'Asystec\Desk\credenciales.dat'
+    $record = Read-DeviceCredential $credentialPath (Get-DeviceIdentity)
+    if (-not $record.applied -or $record.client_id -cne $id) { throw 'El instalador no dejo las credenciales aplicadas.' }
+    $password = $record.password
+    if ([Text.Encoding]::UTF8.GetString([IO.File]::ReadAllBytes($credentialPath)).Contains($password)) { throw 'Credencial guardada sin cifrar.' }
+    $acl = Get-Acl (Split-Path $credentialPath -Parent)
+    $sids = @($acl.GetAccessRules($true,$true,[Security.Principal.SecurityIdentifier]) | ForEach-Object { $_.IdentityReference.Value } | Sort-Object)
+    if (-not $acl.AreAccessRulesProtected -or ($sids -join ',') -ne 'S-1-5-18,S-1-5-32-544') { throw 'ACL de credenciales incorrecta.' }
+    $checks.installer_created_encrypted_admin_only_credentials = 'PASS'
+    foreach ($entry in @(@('verification-method','use-permanent-password'),@('approve-mode','password-click'))) {
+        if ((Invoke-DeskCli @('--option',$entry[0])) -cne $entry[1]) { throw 'Modo de autorizacion incorrecto.' }
+    }
+    $shortcut = Join-Path ([Environment]::GetFolderPath('CommonPrograms')) 'Asystec Desk\Ver datos de conexion.lnk'
+    if (-not (Test-Path -LiteralPath $shortcut)) { throw 'Falta acceso a los datos de conexion.' }
+    $checks.connection_details_shortcut = 'PASS'
+    $repeat = [Diagnostics.Process]::Start($installInfo)
+    if (-not $repeat.WaitForExit(180000) -or $repeat.ExitCode -ne 0) { throw 'La reinstalacion fallo.' }
+    $again = Read-DeviceCredential $credentialPath (Get-DeviceIdentity)
+    if ($again.password -cne $password -or (Invoke-DeskCli @('--get-id')) -cne $id) { throw 'La reinstalacion cambio las credenciales.' }
+    $checks.reinstall_preserves_id_and_password = 'PASS'
     $rsa = New-Object Security.Cryptography.RSACryptoServiceProvider
     $rsa.PersistKeyInCsp = $false
     try {
@@ -80,7 +99,7 @@ try {
         @{id=$id;password_rsa_oaep=$encrypted} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $output 'qa-credential-encrypted.json') -Encoding UTF8
     } finally { $rsa.Dispose() }
     $password = $null
-    $checks.unique_qa_password_set = 'PASS'
+    $checks.installer_password_exported_encrypted_for_qa = 'PASS'
     Restart-Service -Name 'Asystec Desk'
     (Get-Service -Name 'Asystec Desk').WaitForStatus('Running',[TimeSpan]::FromSeconds(30))
     if ((Invoke-DeskCli @('--get-id')) -cne $id) { throw 'El reinicio cambio el ID.' }
@@ -101,4 +120,8 @@ try {
 } catch {
     $report.result = 'FAIL'
     $report.error = $_.Exception.Message
-} finally { Save-Report }
+} finally {
+    Get-ChildItem -LiteralPath $env:TEMP -Filter 'Asystec-Desk-*.log*' -ErrorAction SilentlyContinue |
+        Copy-Item -Destination $output -Force -ErrorAction SilentlyContinue
+    Save-Report
+}

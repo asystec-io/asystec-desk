@@ -1,0 +1,25 @@
+Window: "498029590 - Remote Desktop - Asystec Desk", App: Asystec Desk.exe.
+	0 ventana 498029590 - Remote Desktop - Asystec Desk Secondary Actions: Raise
+		1 panel
+			2 grupo
+				3 grupo
+					4 grupo
+						5 grupo
+							6 imagen
+								7 grupo
+									8 grupo
+										9 imagen 498029590. Conexión retransmitida y cifrada (TCP) Huella digital: 360d 018d c2de 3292 1fc9 5b49 ff6c 0a9f 6601 4883 6cf6 fde3 70e8 28b9 3065 5a71
+							10 grupo
+								11 grupo
+									12 grupo
+										13 grupo Alerta
+											14 grupo
+												15 texto (settable, string) Contraseña incorrecta Value: ¿Quieres volver a entrar?
+											16 botón Cancelar
+											17 botón Reintentar
+		18 barra de título (settable, string) Value: 498029590 - Remote Desktop - Asystec Desk
+			19 barra de menús Sistema ID: MenuBar
+				20 elemento de menú Sistema
+			21 botón Minimizar
+			22 botón Maximizar
+			23 botón Cerrar

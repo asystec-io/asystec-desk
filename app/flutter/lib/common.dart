@@ -258,7 +258,7 @@ class MyTheme {
   static const Color darkGray = Color.fromARGB(255, 148, 148, 148);
   static const Color cmIdColor = Color(0xFF21790B);
   static const Color dark = Colors.black87;
-  static const Color button = Color(0xFF087F8C);
+  static const Color button = Color(0xFF064589);
   static const Color hoverBorder = Color(0xFF999999);
 
   // ListTile
@@ -1321,7 +1321,7 @@ Color? _msgboxColor(String type) {
   if (type.contains("error") || type == "re-input-password") {
     return Color(0xFFE04F5F);
   }
-  return Color(0xFF087F8C);
+  return Color(0xFF064589);
 }
 
 Widget msgboxIcon(String type) {

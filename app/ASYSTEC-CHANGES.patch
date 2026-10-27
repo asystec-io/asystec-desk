@@ -336,7 +336,7 @@
                    ).marginSymmetric(vertical: 4.0)),
                Container(
 -                decoration: const BoxDecoration(color: Color(0xFF2c8cff)),
-+                decoration: const BoxDecoration(color: Color(0xFF087F8C)),
++                decoration: const BoxDecoration(color: Color(0xFF064589)),
                  padding:
                      const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
                  child: SelectionArea(
@@ -356,7 +356,7 @@
    static const Color cmIdColor = Color(0xFF21790B);
    static const Color dark = Colors.black87;
 -  static const Color button = Color(0xFF2C8CFF);
-+  static const Color button = Color(0xFF087F8C);
++  static const Color button = Color(0xFF064589);
    static const Color hoverBorder = Color(0xFF999999);
  
    // ListTile
@@ -365,7 +365,7 @@
      return Color(0xFFE04F5F);
    }
 -  return Color(0xFF2C8CFF);
-+  return Color(0xFF087F8C);
++  return Color(0xFF064589);
  }
  
  Widget msgboxIcon(String type) {

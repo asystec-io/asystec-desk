@@ -1,6 +1,6 @@
-Asystec Desk 0.1.0-dev, basado en RustDesk 1.5.0.
+Asystec Desk 0.1.2, basado en RustDesk 1.5.0.
 Modificaciones Asystec: 26-10-2026. Licencia: AGPL-3.0.
 Se conservan los derechos y avisos de los autores originales.
 Distribuir el codigo correspondiente junto al binario, incluidos scripts y assets.
-Icono AD provisional; no es el logotipo oficial de Asystec.
+Identidad Asystec Desk: Dos ventanas, paquete final suministrado por Asystec.
 No es un producto oficial ni esta avalado por RustDesk.

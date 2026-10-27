@@ -1,0 +1,94 @@
+{
+  "release": "v0.1.2",
+  "at_utc": "2026-10-27T05:20:39.946587+00:00",
+  "result": "PASS",
+  "brand_package": "65b550f257ff3bf324252a29b84ec99f7e53978364475821910ed8d5c1bcb7c2",
+  "source_integrity_tests": 5,
+  "credential_tests": 3,
+  "asset_checks": {
+    "result": "PASS",
+    "supplied_ico_copied_verbatim": true,
+    "icon_sizes": [
+      [
+        16,
+        16
+      ],
+      [
+        32,
+        32
+      ],
+      [
+        48,
+        48
+      ],
+      [
+        64,
+        64
+      ],
+      [
+        128,
+        128
+      ],
+      [
+        256,
+        256
+      ]
+    ],
+    "flutter_assets_match_branding": true,
+    "powershell_utf8_bom_preserved": true
+  },
+  "reproducibility": {
+    "result": "PASS",
+    "source_preparation_reproduces_final_brand_assets": true,
+    "brand_palette_present": true
+  },
+  "embedded_icon": {
+    "client": "PASS",
+    "installer": "PASS",
+    "rejects_old_AD_icon": "PASS"
+  },
+  "sandbox": {
+    "at_utc": "2026-10-27T05:09:39.7359233Z",
+    "result": "PASS",
+    "checks": {
+      "windows_product_brand": "PASS",
+      "installation_and_running_service_with_spaces": "PASS",
+      "automatic_startup": "PASS",
+      "compiled_server_key_relay_and_empty_api": "PASS",
+      "client_id": "PASS",
+      "installer_created_encrypted_admin_only_credentials": "PASS",
+      "connection_details_shortcut": "PASS",
+      "reinstall_preserves_id_and_password": "PASS",
+      "installer_password_exported_encrypted_for_qa": "PASS",
+      "service_restart_preserves_id": "PASS",
+      "sandbox_to_asystec_tcp_21115": "PASS",
+      "sandbox_to_asystec_tcp_21116": "PASS",
+      "sandbox_to_asystec_tcp_21117": "PASS"
+    },
+    "exe_sha256": "628d59131e3b31e2583d0560c3480a9c5258dc6a9db47513301b9bd9db7da395",
+    "product_name": "Asystec Desk",
+    "setup_sha256": "8f62dfe25583f3165bf9e2bc5745e9ac8ab2e3fd017761c0b9e5e0520fd184cd",
+    "client_id": "498032084",
+    "remote_desktop_session": "PASS_AUTHENTICATED_ENCRYPTED_RELAY_TCP"
+  },
+  "visual": {
+    "installed_desktop_icon": "PASS",
+    "client_dark_theme_logo": "PASS",
+    "installer_header_and_finished_sidebar": "PASS",
+    "connection_details_branding": "PASS",
+    "password_masked_initially": "PASS",
+    "copy_password_feedback": "PASS",
+    "copy_id_and_password_feedback": "PASS",
+    "finish_opens_credentials_window": "PASS"
+  },
+  "runtime_changes": [
+    "client icons and logos",
+    "three existing branded colors",
+    "credential window presentation"
+  ],
+  "limitations": [
+    "Windows Sandbox validation does not cover all Windows versions",
+    "No Authenticode signature",
+    "Manual password changes are not synchronized with installer-managed credentials"
+  ]
+}

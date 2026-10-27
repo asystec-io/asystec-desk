@@ -39,14 +39,16 @@ class SourceSafetyTests(unittest.TestCase):
             self.assertEqual(marker.read_text(), "keep")
 
     def test_prepared_sources_are_intact_and_attributed(self):
-        source = ROOT / ".build/asystec-desk-source"
+        source = ROOT / "app"
+        if not source.exists():
+            source = ROOT / ".build/asystec-desk-source"
         manifest = json.loads((source / "ASYSTEC-SOURCE-MANIFEST.json").read_text())
         for name, expected in manifest["files"].items():
             with self.subTest(file=name):
                 self.assertEqual(prepare.sha256(source / name), expected)
         original = (ROOT / "clients/windows/LICENSE-RUSTDESK.txt").read_text(encoding="utf-8-sig")
         self.assertEqual((source / "LICENCE").read_text(encoding="utf-8-sig"), original)
-        config = (source / "libs/hbb_common/src/config.rs").read_text()
+        config = (source / "libs/hbb_common/src/config.rs").read_text(encoding="utf-8")
         self.assertNotIn('"rs-ny.rustdesk.com"', config)
         self.assertIn(manifest["profile"]["public_key"], config)
         injected = config.split('// Asystec Desk:', 1)[1].split(']));', 1)[0]

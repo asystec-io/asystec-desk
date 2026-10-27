@@ -1,15 +1,21 @@
 # Asystec Desk
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="desktop/assets/logo_dark.png">
+  <img alt="Asystec Desk" src="desktop/assets/logo_light.png" width="420">
+</picture>
+
 Cliente de soporte remoto para Windows x64, basado en RustDesk OSS y configurado
 para los servidores de Asystec. Licencia AGPL-3.0.
 
 - [Descargar la última versión de Asystec Desk para Windows](https://github.com/asystec-io/asystec-desk/releases/latest/download/Asystec-Desk-Setup.exe)
 - [Código completo del cliente](app/)
-- [Resultado y alcance de las pruebas](desktop/RELEASE-0.1.0.md)
+- [Cambios y validación de la versión 0.1.2](desktop/RELEASE-0.1.2.md)
 - [Compilación y herramientas](desktop/README.md)
 
-La primera versión se publica para pruebas: icono AD provisional y sin firma
-digital propia. El repositorio y las descargas son públicos.
+La versión 0.1.2 incorpora la identidad final «Dos ventanas» y la ventana para
+copiar ID y contraseña. El repositorio y las descargas son públicos. El
+instalador todavía no tiene firma digital propia.
 
 El enlace de descarga anterior se mantiene entre versiones. Para publicar una
 actualización, adjuntar el instalador con el mismo nombre `Asystec-Desk-Setup.exe`
@@ -30,14 +36,14 @@ de GitHub; `dist/` y las cachés de compilación no se incorporan al historial G
 
 ## Infraestructura y antecedentes locales
 
-El cliente propio para Windows, basado en RustDesk y con código abierto, comienza
-en [desktop/README.md](desktop/README.md). Incluye preparación de fuentes fijadas,
-marca provisional, configuración del servidor de Asystec y base de compilación.
-El [instalador Asystec Desk](dist/Asystec-Desk-Setup.exe) está compilado y probado
+El cliente propio para Windows, basado en RustDesk y con código abierto, se
+documenta en [desktop/README.md](desktop/README.md). Incluye preparación de fuentes
+fijadas, identidad Asystec, configuración del servidor y herramientas de compilación.
+La primera versión del [instalador Asystec Desk](dist/Asystec-Desk-Setup.exe) fue compilada y probada
 en Windows Sandbox contra el relay propio de Asystec. Pasaron instalación,
 servicio, configuración de red, autenticación y conexión cifrada por TCP.
 Consulta el [informe de esta versión](desktop/RELEASE-0.1.0.md).
-Esta primera versión usa un icono AD provisional y todavía no tiene firma digital.
+Esa primera versión utilizaba un icono AD provisional, sustituido en 0.1.2.
 El instalador descrito abajo corresponde al trabajo anterior con binarios
 oficiales RustDesk y conserva su marca original.
 

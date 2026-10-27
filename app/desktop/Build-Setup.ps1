@@ -9,6 +9,7 @@ foreach ($file in @('Asystec Desk.exe','librustdesk.dll','flutter_windows.dll','
     if (-not (Test-Path -LiteralPath (Join-Path $BundleDirectory $file))) { throw "Falta $file" }
 }
 if ((Get-Item -LiteralPath (Join-Path $BundleDirectory 'Asystec Desk.exe')).VersionInfo.ProductName -ne 'Asystec Desk') { throw 'El cliente no tiene la marca esperada.' }
+& (Join-Path $PSScriptRoot 'Verify-WindowsBranding.ps1') -Executable (Join-Path $BundleDirectory 'Asystec Desk.exe')
 $arguments = @("/DBundleDir=$([IO.Path]::GetFullPath($BundleDirectory))", "/DOutputDir=$([IO.Path]::GetFullPath($OutputDirectory))", "/DDesktopDir=$PSScriptRoot", (Join-Path $PSScriptRoot 'Asystec-Desk.iss'))
 & $CompilerPath @arguments
 if ($LASTEXITCODE -ne 0) { throw "Inno Setup: $LASTEXITCODE" }

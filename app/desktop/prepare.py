@@ -123,9 +123,9 @@ def brand(source, profile, assets):
             f"launchUrlString({quote(profile['website'])});")
     replace(settings, "translate('Slogan_tip'),",
             "'Asystec Desk · basado en RustDesk\\nModificaciones Asystec, 26-10-2026 · AGPL-3.0',")
-    replace("flutter/lib/common.dart", "0xFF2C8CFF", "0xFF087F8C", count=2)
-    replace(settings, "0xFF2c8cff", "0xFF087F8C")
-    for filename in ("icon.png", "logo.png", "logo_light.png", "logo_dark.png"):
+    replace("flutter/lib/common.dart", "0xFF2C8CFF", "0xFF064589", count=2)
+    replace(settings, "0xFF2c8cff", "0xFF064589")
+    for filename in ("icon.png", "icon.svg", "logo.png", "logo_light.png", "logo_dark.png"):
         shutil.copy2(assets / filename, source / "flutter/assets" / filename)
     for filename in ("icon.png", "icon.ico", "tray-icon.ico"):
         shutil.copy2(assets / filename, source / "res" / filename)
@@ -159,11 +159,11 @@ def prepare(output):
         patch = brand(source, profile, ROOT / "desktop/assets")
         (source / "ASYSTEC-CHANGES.patch").write_text(patch, encoding="utf-8")
         (source / "ASYSTEC-NOTICE.txt").write_text(
-            "Asystec Desk 0.1.0-dev, basado en RustDesk 1.5.0.\n"
+            "Asystec Desk 0.1.2, basado en RustDesk 1.5.0.\n"
             "Modificaciones Asystec: 26-10-2026. Licencia: AGPL-3.0.\n"
             "Se conservan los derechos y avisos de los autores originales.\n"
             "Distribuir el codigo correspondiente junto al binario, incluidos scripts y assets.\n"
-            "Icono AD provisional; no es el logotipo oficial de Asystec.\n"
+            "Identidad Asystec Desk: Dos ventanas, paquete final suministrado por Asystec.\n"
             "No es un producto oficial ni esta avalado por RustDesk.\n",
             encoding="utf-8",
         )

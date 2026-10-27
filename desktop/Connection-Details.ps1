@@ -224,7 +224,7 @@ function Show-DeviceCredential {
     [Windows.Forms.Application]::EnableVisualStyles()
     $form = New-Object Windows.Forms.Form
     $form.Text = 'Asystec Desk - Datos de conexión'
-    $form.ClientSize = New-Object Drawing.Size(570, 330)
+    $form.ClientSize = New-Object Drawing.Size(570, 400)
     $form.StartPosition = 'CenterScreen'
     $form.FormBorderStyle = 'FixedDialog'
     $form.MaximizeBox = $false
@@ -233,35 +233,40 @@ function Show-DeviceCredential {
     $form.BackColor = [Drawing.Color]::White
     $iconPath = Join-Path $PSScriptRoot 'Asystec Desk.exe'
     if (Test-Path -LiteralPath $iconPath) { $form.Icon = [Drawing.Icon]::ExtractAssociatedIcon($iconPath) }
+    $brandLogo = New-Object Windows.Forms.PictureBox
+    $brandLogo.SetBounds(24, 12, 300, 64)
+    $brandLogo.SizeMode = 'Zoom'
+    $logoPath = Join-Path $PSScriptRoot 'data\flutter_assets\assets\logo_light.png'
+    if (Test-Path -LiteralPath $logoPath) { $brandLogo.Load($logoPath) }
     $heading = New-Object Windows.Forms.Label
-    $heading.SetBounds(24, 20, 520, 32)
+    $heading.SetBounds(24, 90, 520, 32)
     $heading.Font = New-Object Drawing.Font('Segoe UI', 16, [Drawing.FontStyle]::Bold)
-    $heading.ForeColor = [Drawing.ColorTranslator]::FromHtml('#087F8C')
+    $heading.ForeColor = [Drawing.ColorTranslator]::FromHtml('#0F1F45')
     $heading.Text = 'Conecta con este equipo'
     $intro = New-Object Windows.Forms.Label
-    $intro.SetBounds(24, 60, 520, 42)
+    $intro.SetBounds(24, 130, 520, 42)
     $intro.Text = "Comparte estos datos con tu técnico de confianza.`r`nLa contraseña se conserva al reinstalar Asystec Desk."
     $idLabel = New-Object Windows.Forms.Label
-    $idLabel.SetBounds(24, 118, 135, 25)
+    $idLabel.SetBounds(24, 188, 135, 25)
     $idLabel.Text = 'ID del equipo'
     $idField = New-Object Windows.Forms.TextBox
-    $idField.SetBounds(165, 114, 378, 28)
+    $idField.SetBounds(165, 184, 378, 28)
     $idField.ReadOnly = $true
     $idField.Text = $Record.client_id
     $passwordLabel = New-Object Windows.Forms.Label
-    $passwordLabel.SetBounds(24, 162, 135, 25)
+    $passwordLabel.SetBounds(24, 232, 135, 25)
     $passwordLabel.Text = 'Contraseña'
     $passwordField = New-Object Windows.Forms.TextBox
-    $passwordField.SetBounds(165, 158, 378, 28)
+    $passwordField.SetBounds(165, 228, 378, 28)
     $passwordField.ReadOnly = $true
     $passwordField.UseSystemPasswordChar = $true
     $passwordField.Text = $Record.password
     $reveal = New-Object Windows.Forms.CheckBox
-    $reveal.SetBounds(165, 195, 365, 28)
+    $reveal.SetBounds(165, 265, 365, 28)
     $reveal.Text = 'Mostrar contraseña'
     $reveal.Add_CheckedChanged({ $passwordField.UseSystemPasswordChar = -not $reveal.Checked })
     $copyPassword = New-Object Windows.Forms.Button
-    $copyPassword.SetBounds(24, 242, 176, 38)
+    $copyPassword.SetBounds(24, 312, 176, 38)
     $copyPassword.Text = 'Copiar contraseña'
     $copyPassword.Add_Click({
         try {
@@ -270,7 +275,11 @@ function Show-DeviceCredential {
         } catch { [Windows.Forms.MessageBox]::Show('No se pudo copiar. Intenta nuevamente.', 'Asystec Desk') | Out-Null }
     })
     $copyAll = New-Object Windows.Forms.Button
-    $copyAll.SetBounds(210, 242, 190, 38)
+    $copyAll.SetBounds(210, 312, 190, 38)
+    $copyAll.FlatStyle = 'Flat'
+    $copyAll.FlatAppearance.BorderSize = 0
+    $copyAll.BackColor = [Drawing.ColorTranslator]::FromHtml('#064589')
+    $copyAll.ForeColor = [Drawing.Color]::White
     $copyAll.Text = 'Copiar ID y contraseña'
     $copyAll.Add_Click({
         try {
@@ -279,17 +288,21 @@ function Show-DeviceCredential {
         } catch { [Windows.Forms.MessageBox]::Show('No se pudo copiar. Intenta nuevamente.', 'Asystec Desk') | Out-Null }
     })
     $close = New-Object Windows.Forms.Button
-    $close.SetBounds(423, 242, 120, 38)
+    $close.SetBounds(423, 312, 120, 38)
     $close.Text = 'Cerrar'
     $close.Add_Click({ $form.Close() })
     $form.CancelButton = $close
     $hint = New-Object Windows.Forms.Label
-    $hint.SetBounds(24, 295, 520, 22)
+    $hint.SetBounds(24, 365, 520, 22)
     $hint.Text = 'Puedes volver a abrir esta ventana desde el menú Inicio.'
     $hint.ForeColor = [Drawing.Color]::DimGray
     $hint.Font = New-Object Drawing.Font('Segoe UI', 9)
-    $form.Controls.AddRange(@($heading,$intro,$idLabel,$idField,$passwordLabel,$passwordField,$reveal,$copyPassword,$copyAll,$close,$hint))
-    try { $form.ShowDialog() | Out-Null } finally { $passwordField.Clear(); $form.Dispose() }
+    $form.Controls.AddRange(@($brandLogo,$heading,$intro,$idLabel,$idField,$passwordLabel,$passwordField,$reveal,$copyPassword,$copyAll,$close,$hint))
+    try { $form.ShowDialog() | Out-Null } finally {
+        $passwordField.Clear()
+        if ($brandLogo.Image) { $brandLogo.Image.Dispose() }
+        $form.Dispose()
+    }
 }
 
 if ($MyInvocation.InvocationName -ne '.') {

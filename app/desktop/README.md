@@ -1,10 +1,23 @@
-# Asystec Desk para Windows — desarrollo 0.1.0
+# Asystec Desk para Windows
 
 Versión propia basada en RustDesk OSS 1.5.0, bajo AGPL-3.0. Esta carpeta inicia
 el cliente modificado; `clients/` conserva el instalador anterior que utiliza
 binarios oficiales de RustDesk. No son el mismo producto ni comparten pruebas.
 
 ## Estado
+
+`0.1.2` integra el paquete final de marca "Dos ventanas": iconos Windows,
+bandeja, logos de tema claro/oscuro, azul Asystec y asistente de instalacion.
+La ventana de ID y contrasena incorpora el logo y los colores de la marca.
+Los originales suministrados estan en `branding/`, con hashes en `IMPORT.json`.
+
+`0.1.1-rc.2` incorpora la ventana para copiar ID y contrasena al finalizar y un
+acceso en el menu Inicio. Genera una contrasena unica por equipo y la conserva
+cifrada para reinstalaciones. Detalles y limites en `RELEASE-0.1.1-rc.2.md`.
+
+La version preliminar de instalador `0.1.1-rc.1` agrega diagnostico para un fallo
+reportado en otra computadora. Consulta `RELEASE-0.1.1-rc.1.md`: las pruebas
+locales pasaron, pero la causa del incidente externo sigue sin confirmar.
 
 **EXE Windows x64 compilado y probado contra el servidor de Asystec.**
 El resultado final y los hashes están en `RELEASE-0.1.0.md` y
@@ -15,8 +28,8 @@ respondió las ocho pruebas externas de protocolo y relay el 26 de octubre de
 2026, hora de Costa Rica. Esa comprobación no valida una sesión de escritorio
 con este cliente nuevo. Evidencia: `verification/server-2026-10-26.json`.
 
-El nombre visible será Asystec Desk. El icono AD y la paleta verde azulado son
-provisionales; no representan un logotipo oficial aprobado de Asystec.
+La identidad visual utiliza el paquete final suministrado por Asystec. Los
+iconos de 16, 32 y 48 px conservan las versiones simplificadas del original.
 
 ## Cambios en el código
 
@@ -62,8 +75,9 @@ también se copian dentro del árbol fuente.
 
 `profile.json` contiene solo información pública. Para cambiar servidor o clave
 se prepara y compila una versión nueva; no se regenera la identidad del servidor.
-Los PNG e ICO están incluidos; regenerarlos con `make_assets.py` requiere Pillow
-y la fuente Segoe UI Semibold de Windows.
+Los PNG e ICO están incluidos. `make_assets.py` copia los originales de
+`branding/` y prepara la imagen lateral del instalador con Pillow. Los logos
+ya tienen el texto Poppins convertido a trazos; no requieren instalar fuentes.
 
 ## Compilar Windows x64
 

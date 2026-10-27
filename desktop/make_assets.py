@@ -1,27 +1,32 @@
-"""Generate the provisional AD typography mark from scratch (requires Pillow)."""
+"""Prepare Windows assets from the supplied final Asystec Desk brand package."""
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
+import shutil
 
-OUTPUT = Path(__file__).resolve().parent / "assets"
+from PIL import Image
+
+ROOT = Path(__file__).resolve().parent
+BRAND = ROOT / "branding"
+OUTPUT = ROOT / "assets"
 OUTPUT.mkdir(exist_ok=True)
-FONT = Path("C:/Windows/Fonts/seguisb.ttf")
 
+# Preserve the supplied ICO's hand-simplified 16/32/48 px frames.
+sources = {
+    "icon.ico": "icono_app/asystec-desk.ico",
+    "tray-icon.ico": "icono_app/asystec-desk.ico",
+    "icon.png": "icono_app/asystec-desk_icono_512.png",
+    "icon.svg": "icono_app/asystec-desk_icono_1024_maestro.svg",
+    "logo.png": "logo_horizontal/asystec-desk_logo-horizontal_principal_2048.png",
+    "logo_light.png": "logo_horizontal/asystec-desk_logo-horizontal_principal_2048.png",
+    "logo_dark.png": "logo_horizontal/asystec-desk_logo-horizontal_negativo_2048.png",
+}
+for name, relative in sources.items():
+    shutil.copy2(BRAND / relative, OUTPUT / name)
 
-def font(size):
-    return ImageFont.truetype(str(FONT), size)
-
-
-icon = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
-draw = ImageDraw.Draw(icon)
-draw.rounded_rectangle((8, 8, 504, 504), radius=116, fill="#087F8C")
-draw.text((256, 244), "AD", font=font(226), anchor="mm", fill="white")
-draw.rounded_rectangle((126, 386, 386, 410), radius=12, fill="#9AE6D8")
-icon.save(OUTPUT / "icon.png")
-for name in ("icon.ico", "tray-icon.ico"):
-    icon.save(OUTPUT / name, sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)])
-for name, color in (("logo.png", "#152F3A"), ("logo_light.png", "#152F3A"), ("logo_dark.png", "#F0FAFC")):
-    logo = Image.new("RGBA", (1000, 200), (0, 0, 0, 0))
-    logo.alpha_composite(icon.resize((180, 180), Image.Resampling.LANCZOS), (0, 10))
-    ImageDraw.Draw(logo).text((215, 90), "Asystec Desk", font=font(116), anchor="lm", fill=color)
-    logo.save(OUTPUT / name)
+# Fit the unmodified negative lockup into Inno Setup's 164:314 sidebar ratio.
+sidebar = Image.new("RGBA", (492, 942), "#0F1F45")
+with Image.open(BRAND / "logo_vertical/asystec-desk_logo-vertical_negativo_2048.png") as source:
+    logo = source.convert("RGBA")
+    logo.thumbnail((412, 460), Image.Resampling.LANCZOS)
+    sidebar.alpha_composite(logo, ((sidebar.width - logo.width) // 2, 180))
+sidebar.convert("RGB").save(OUTPUT / "wizard.png")
 print(OUTPUT)

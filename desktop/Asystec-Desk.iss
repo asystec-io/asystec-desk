@@ -11,7 +11,7 @@
 [Setup]
 AppId=AsystecDeskBootstrap
 AppName=Asystec Desk
-AppVersion=0.1.1.2
+AppVersion=0.1.2
 AppPublisher=Asystec
 AppPublisherURL=https://asystec.io
 DefaultDirName={autopf}\Asystec Desk
@@ -28,6 +28,9 @@ LicenseFile={#DesktopDir}\LICENSE.txt
 Compression=lzma2/fast
 SolidCompression=yes
 WizardStyle=modern
+WizardImageFile={#DesktopDir}\assets\wizard.png
+WizardSmallImageFile={#DesktopDir}\assets\icon.png
+WizardImageBackColor=$451F0F
 CloseApplications=no
 RestartApplications=no
 SetupLogging=yes

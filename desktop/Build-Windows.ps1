@@ -68,6 +68,8 @@ try {
         try { Invoke-Checked 'flutter' @('pub','get') } finally { Pop-Location }
         Invoke-Checked 'flutter_rust_bridge_codegen' @('--rust-input','./src/flutter_ffi.rs','--dart-output','./flutter/lib/generated_bridge.dart','--c-output','./flutter/macos/Runner/bridge_generated.h','--llvm-path',(Split-Path $env:LIBCLANG_PATH -Parent))
     }
+    # MSBuild may retain Runner.rc.res when only the referenced ICO changes.
+    (Get-Item -LiteralPath 'flutter/windows/runner/Runner.rc').LastWriteTimeUtc = [DateTime]::UtcNow
     Invoke-Checked $Python @('build.py','--flutter','--skip-portable-pack')
     $release = Join-Path $SourceDirectory 'flutter\build\windows\x64\runner\Release'
     foreach ($required in @('rustdesk.exe','librustdesk.dll','flutter_windows.dll','data')) {
@@ -76,6 +78,7 @@ try {
     New-Item -ItemType Directory -Path $OutputDirectory | Out-Null
     Get-ChildItem -LiteralPath $release | Copy-Item -Destination $OutputDirectory -Recurse
     Rename-Item -LiteralPath (Join-Path $OutputDirectory 'rustdesk.exe') -NewName 'Asystec Desk.exe'
+    & (Join-Path $PSScriptRoot 'Verify-WindowsBranding.ps1') -Executable (Join-Path $OutputDirectory 'Asystec Desk.exe')
     Copy-Item -LiteralPath LICENCE,ASYSTEC-NOTICE.txt -Destination $OutputDirectory
     # The source bundle includes generated bridges and branding/build instructions.
     Invoke-Checked $Python @('-c', 'import pathlib,zipfile,sys; root=pathlib.Path("."); out=pathlib.Path(sys.argv[1]); excluded={".git","target","build",".dart_tool","ephemeral","__pycache__"}; z=zipfile.ZipFile(out,"w",zipfile.ZIP_DEFLATED); [z.write(f,"Asystec-Desk-source/"+f.as_posix()) for f in root.rglob("*") if f.is_file() and not excluded.intersection(f.parts)]; z.close()', (Join-Path $OutputDirectory 'Asystec-Desk-source.zip'))

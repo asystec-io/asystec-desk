@@ -1,0 +1,50 @@
+Window: "498029590 - Remote Desktop - Asystec Desk", App: Asystec Desk.exe.
+	0 ventana 498029590 - Remote Desktop - Asystec Desk Secondary Actions: Raise
+		1 panel
+			632 grupo
+				633 grupo
+					634 grupo
+						635 grupo
+							636 imagen
+								637 grupo
+									638 grupo
+										639 imagen 498029590@241a78a3-855c-4e81-8472-f5360b946c51. Conexión retransmitida y cifrada (TCP) Huella digital: 360d 018d c2de 3292 1fc9 5b49 ff6c 0a9f 6601 4883 6cf6 fde3 70e8 28b9 3065 5a71
+							640 grupo
+								641 grupo
+									642 grupo
+										643 grupo
+										644 grupo
+											645 grupo
+												646 grupo
+													647 grupo Anclar herramientas
+														648 imagen Anclar herramientas
+											649 grupo
+												650 grupo
+													651 imagen Acciones de control
+											652 grupo
+												653 grupo
+													654 imagen Configuración de pantalla
+											655 grupo
+												656 grupo
+													657 imagen Ajustes de teclado
+											658 grupo
+												659 grupo
+													660 imagen Chat
+											661 grupo
+												662 grupo
+													663 grupo Comenzar grabación de sesión
+														664 imagen Comenzar grabación de sesión
+											665 grupo
+												666 grupo
+													667 grupo Cerrar
+														668 imagen Cerrar
+										669 botón Pantalla completa
+										670 botón Ocultar herramientas
+		41 barra de título (settable, string) Value: 498029590 - Remote Desktop - Asystec Desk
+			42 barra de menús Sistema ID: MenuBar
+				43 elemento de menú Sistema
+			44 botón Minimizar
+			45 botón Restaurar
+			46 botón Cerrar
+
+The focused UI element is 643 grupo.

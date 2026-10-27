@@ -1,0 +1,60 @@
+{
+  "at_utc": "2026-10-27T03:53:53.7856276Z",
+  "version": "0.1.1-rc.1",
+  "result": "PASS_IN_TEST_ENVIRONMENT_REPORTED_PC_PENDING",
+  "setup_sha256": "3a8406aeae2c6e9f741b85265aba50523b41d566b84a617a40dcd0f5fd68bc1a",
+  "exe_sha256": "7254fef9e6711c29a92e39c452f0341b701e8fa0e0168c1f71243045d43a0730",
+  "clean_windows": {
+    "checks": {
+      "windows_product_brand": "PASS",
+      "installation_and_running_service_with_spaces": "PASS",
+      "automatic_startup": "PASS",
+      "compiled_server_key_relay_and_empty_api": "PASS",
+      "client_id": "PASS",
+      "unique_qa_password_set": "PASS",
+      "service_restart_preserves_id": "PASS",
+      "sandbox_to_asystec_tcp_21115": "PASS",
+      "sandbox_to_asystec_tcp_21116": "PASS",
+      "sandbox_to_asystec_tcp_21117": "PASS"
+    },
+    "remote_desktop_session": "NOT_RETESTED_FOR_THIS_INSTALLER_CHANGE",
+    "result": "PASS"
+  },
+  "update_with_rustdesk_1_5_0": {
+    "at_utc": "2026-10-27T03:48:51.2689504Z",
+    "result": "PASS",
+    "rustdesk_before": {
+      "state": "Running",
+      "path": "\"C:\\Program Files\\RustDesk\\RustDesk.exe\" --service"
+    },
+    "setup_sha256": "3a8406aeae2c6e9f741b85265aba50523b41d566b84a617a40dcd0f5fd68bc1a",
+    "setup_exit": 0,
+    "asystec_after": {
+      "state": "Running",
+      "path": "\"C:\\Program Files\\Asystec Desk\\Asystec Desk.exe\" --service"
+    },
+    "rustdesk_after": {
+      "state": "Running",
+      "path": "\"C:\\Program Files\\RustDesk\\RustDesk.exe\" --service"
+    }
+  },
+  "native_failure_detection": {
+    "at_utc": "2026-10-27T03:52:45.5652929Z",
+    "result": "PASS",
+    "checks": {
+      "native_failure_with_zero_exit_is_rejected": "PASS",
+      "error_detail_and_log_survive_failure": "PASS"
+    }
+  },
+  "failed_bootstrap": {
+    "at_utc": "2026-10-27T03:49:40.7589524Z",
+    "result": "PASS",
+    "setup_exit": 12,
+    "error_detail_preserved": true
+  },
+  "reported_pc": {
+    "reproduction": "NOT_REPRODUCED",
+    "cause": "UNCONFIRMED",
+    "available_for_inspection": false
+  }
+}

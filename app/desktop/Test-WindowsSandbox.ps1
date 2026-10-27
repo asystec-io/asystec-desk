@@ -1,10 +1,11 @@
 #requires -Version 5.1
 [CmdletBinding()]
-param([string]$BundleDirectory, [string]$RunName = 'asystec-desk-qa')
+param([string]$BundleDirectory, [string]$RunName = 'asystec-desk-qa', [string]$SetupPath)
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path $PSScriptRoot -Parent
 if (-not $BundleDirectory) { $BundleDirectory = Join-Path $repo 'dist\asystec-desk-dev' }
 if (-not (Test-Path -LiteralPath (Join-Path $BundleDirectory 'Asystec Desk.exe'))) { throw 'Falta el cliente compilado.' }
+if ($SetupPath -and -not (Test-Path -LiteralPath $SetupPath -PathType Leaf)) { throw "No existe el instalador indicado: $SetupPath" }
 if ($RunName -notmatch '^[a-zA-Z0-9_-]+$') { throw 'RunName invalido.' }
 $inputPath = Join-Path $repo "dist\$RunName-input"
 $outputPath = Join-Path $repo "dist\$RunName-results"
@@ -12,9 +13,10 @@ New-Item -ItemType Directory -Path $inputPath,$outputPath -Force | Out-Null
 $bundle = Join-Path $inputPath 'bundle'
 New-Item -ItemType Directory -Path $bundle -Force | Out-Null
 Get-ChildItem -LiteralPath $BundleDirectory -Exclude '*.zip' | Copy-Item -Destination $bundle -Recurse -Force
-Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'tests\Sandbox-Runner.ps1'),(Join-Path $PSScriptRoot 'profile.json') -Destination $inputPath -Force
-$setup = Join-Path $repo 'dist\Asystec-Desk-Setup.exe'
-if (Test-Path -LiteralPath $setup) { Copy-Item -LiteralPath $setup -Destination $inputPath -Force }
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'tests\Sandbox-Runner.ps1') -Destination (Join-Path $inputPath 'Sandbox-Runner.ps1') -Force
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'profile.json') -Destination $inputPath -Force
+if (-not $SetupPath) { $SetupPath = Join-Path $repo 'dist\Asystec-Desk-Setup.exe' }
+if (Test-Path -LiteralPath $SetupPath) { Copy-Item -LiteralPath $SetupPath -Destination (Join-Path $inputPath 'Asystec-Desk-Setup.exe') -Force }
 $rsa = New-Object Security.Cryptography.RSACryptoServiceProvider 2048
 $rsa.PersistKeyInCsp = $false
 try {
