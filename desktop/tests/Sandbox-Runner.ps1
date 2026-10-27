@@ -32,14 +32,19 @@ try {
     $report.product_name = (Get-Item -LiteralPath $artifact).VersionInfo.ProductName
     if ($report.product_name -ne 'Asystec Desk') { throw 'ProductName incorrecto.' }
     $checks.windows_product_brand = 'PASS'
+    $installInfo = New-Object Diagnostics.ProcessStartInfo
+    $installInfo.UseShellExecute = $false
+    $installInfo.CreateNoWindow = $true
     if (Test-Path -LiteralPath 'C:\AsystecQAInput\Asystec-Desk-Setup.exe') {
         $report.setup_sha256 = (Get-FileHash -LiteralPath 'C:\AsystecQAInput\Asystec-Desk-Setup.exe').Hash.ToLowerInvariant()
-        $install = Start-Process -FilePath 'C:\AsystecQAInput\Asystec-Desk-Setup.exe' -ArgumentList '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART' -WindowStyle Hidden -PassThru
+        $installInfo.FileName = 'C:\AsystecQAInput\Asystec-Desk-Setup.exe'
+        $installInfo.Arguments = '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART'
     } else {
-        $install = Start-Process -FilePath $artifact -ArgumentList '--silent-install' -WindowStyle Hidden -PassThru
+        $installInfo.FileName = $artifact
+        $installInfo.Arguments = '--silent-install'
     }
-    if (-not $install.WaitForExit(120000)) { throw 'Instalacion no termino.' }
-    $install.Refresh()
+    $install = [Diagnostics.Process]::Start($installInfo)
+    if (-not $install.WaitForExit(180000)) { throw 'Instalacion no termino.' }
     if ($install.ExitCode -ne 0) { throw "Instalador devolvio $($install.ExitCode)." }
     $script:installed = 'C:\Program Files\Asystec Desk\Asystec Desk.exe'
     $service = $null
@@ -101,4 +106,8 @@ try {
 } catch {
     $report.result = 'FAIL'
     $report.error = $_.Exception.Message
-} finally { Save-Report }
+} finally {
+    Get-ChildItem -LiteralPath $env:TEMP -Filter 'Asystec-Desk-*.log*' -ErrorAction SilentlyContinue |
+        Copy-Item -Destination $output -Force -ErrorAction SilentlyContinue
+    Save-Report
+}

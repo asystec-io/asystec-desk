@@ -6,6 +6,10 @@ binarios oficiales de RustDesk. No son el mismo producto ni comparten pruebas.
 
 ## Estado
 
+La version preliminar de instalador `0.1.1-rc.1` agrega diagnostico para un fallo
+reportado en otra computadora. Consulta `RELEASE-0.1.1-rc.1.md`: las pruebas
+locales pasaron, pero la causa del incidente externo sigue sin confirmar.
+
 **EXE Windows x64 compilado y probado contra el servidor de Asystec.**
 El resultado final y los hashes están en `RELEASE-0.1.0.md` y
 `verification/windows-final.json`. La carpeta de esta versión es

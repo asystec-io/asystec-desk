@@ -11,7 +11,7 @@
 [Setup]
 AppId=AsystecDeskBootstrap
 AppName=Asystec Desk
-AppVersion=0.1.0.1
+AppVersion=0.1.1
 AppPublisher=Asystec
 AppPublisherURL=https://asystec.io
 DefaultDirName={autopf}\Asystec Desk
@@ -30,6 +30,7 @@ SolidCompression=yes
 WizardStyle=modern
 CloseApplications=no
 RestartApplications=no
+SetupLogging=yes
 VersionInfoDescription=Asystec Desk - Instalador de soporte remoto
 
 [Languages]
@@ -42,6 +43,7 @@ Source: "{#DesktopDir}\Install-Client.ps1"; DestDir: "{tmp}"; Flags: ignoreversi
 [Code]
 var
   InstallationFailed: Boolean;
+  OperationLog: String;
 
 function GetCustomSetupExitCode: Integer;
 begin
@@ -52,16 +54,25 @@ procedure CurStepChanged(CurStep: TSetupStep);
 var
   ResultCode: Integer;
   Arguments: String;
+  Detail: String;
+  Lines: TArrayOfString;
 begin
   if CurStep = ssPostInstall then
   begin
     InstallationFailed := True;
     WizardForm.StatusLabel.Caption := 'Instalando y verificando el servicio de Asystec Desk...';
-    Arguments := '-NoProfile -ExecutionPolicy Bypass -File "' + ExpandConstant('{tmp}\Install-Client.ps1') + '" -PayloadDirectory "' + ExpandConstant('{tmp}\AsystecDeskPayload') + '"';
-    if not Exec(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe'), Arguments, '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+    OperationLog := GetTempDir + 'Asystec-Desk-' + GetDateTimeString('yyyymmdd-hhnnss', '-', ':') + '-' + IntToStr(Random(1000000)) + '.log';
+    Log('Registro de instalacion: ' + OperationLog);
+    Arguments := '-NoProfile -ExecutionPolicy Bypass -File "' + ExpandConstant('{tmp}\Install-Client.ps1') + '" -PayloadDirectory "' + ExpandConstant('{tmp}\AsystecDeskPayload') + '" -InstallDirectory "' + ExpandConstant('{commonpf64}\Asystec Desk') + '" -LogPath "' + OperationLog + '"';
+    if not Exec(ExpandConstant('{sysnative}\WindowsPowerShell\v1.0\powershell.exe'), Arguments, '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
       RaiseException('No se pudo iniciar la instalacion de Asystec Desk.');
     if ResultCode <> 0 then
-      RaiseException('No se pudo verificar la instalacion de Asystec Desk. Codigo: ' + IntToStr(ResultCode));
+    begin
+      Detail := '';
+      if LoadStringsFromFile(OperationLog + '.error.txt', Lines) and (GetArrayLength(Lines) > 0) then
+        Detail := Copy(Lines[0], 1, 600);
+      RaiseException('No se completo la instalacion de Asystec Desk.' + #13#10 + Detail + #13#10 + 'Registro: ' + OperationLog);
+    end;
     InstallationFailed := False;
   end;
 end;
