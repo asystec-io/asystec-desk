@@ -3,13 +3,18 @@
 Cliente de soporte remoto para Windows x64, basado en RustDesk OSS y configurado
 para los servidores de Asystec. Licencia AGPL-3.0.
 
-- [Descargar Asystec Desk 0.1.0](https://github.com/asystec-io/asystec-desk/releases/tag/v0.1.0)
+- [Descargar la última versión de Asystec Desk para Windows](https://github.com/asystec-io/asystec-desk/releases/latest/download/Asystec-Desk-Setup.exe)
 - [Código completo del cliente](app/)
 - [Resultado y alcance de las pruebas](desktop/RELEASE-0.1.0.md)
 - [Compilación y herramientas](desktop/README.md)
 
 La primera versión se publica para pruebas: icono AD provisional y sin firma
-digital propia. Las descargas del repositorio requieren acceso mientras sea privado.
+digital propia. El repositorio y las descargas son públicos.
+
+El enlace de descarga anterior se mantiene entre versiones. Para publicar una
+actualización, adjuntar el instalador con el mismo nombre `Asystec-Desk-Setup.exe`
+a la nueva versión y marcarla como Latest después de verificar los archivos.
+Las versiones preliminares no sustituyen la descarga más reciente.
 
 Para reconstruir el cliente desde las fuentes incluidas, prepara las herramientas
 descritas en `desktop/README.md` y ejecuta desde la raíz:
