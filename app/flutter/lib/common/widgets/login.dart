@@ -12,6 +12,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../common.dart';
 import './dialog.dart';
+import './book_registration.dart';
 import './oidc_auth_status.dart';
 
 const kOpSvgList = [
@@ -735,12 +736,16 @@ Future<bool?> _openLoginDialog() async {
   bool isCloseHovered = false;
 
   final loginOptions = [].obs;
+  final registrationUri = Rxn<Uri>();
+  bool creatingAccount = false;
   final loginOptionsError = Rxn<Object>();
   final loginOptionsInProgress = false.obs;
   fetchLoginOptions() async {
     loginOptionsInProgress.value = true;
     try {
-      loginOptions.value = await UserModel.queryOidcLoginOptions();
+      registrationUri.value = null;
+      loginOptions.value = await UserModel.queryOidcLoginOptions(
+          onRegistrationAvailable: (uri) => registrationUri.value = uri);
       loginOptionsError.value = null;
     } catch (e) {
       debugPrint("queryOidcLoginOptions failed: $e");
@@ -753,6 +758,17 @@ Future<bool?> _openLoginDialog() async {
   Future.delayed(Duration.zero, fetchLoginOptions);
 
   final res = await gFFI.dialogManager.show<bool>((setState, close, context) {
+    if (creatingAccount && registrationUri.value != null) {
+      return CustomAlertDialog(
+        title: const Text('Crear cuenta'),
+        contentBoxConstraints: const BoxConstraints(maxWidth: 380),
+        content: BookRegistration(
+          uri: registrationUri.value!,
+          onBack: () => setState(() => creatingAccount = false),
+          onRegistered: () => close(true),
+        ),
+      );
+    }
     username.addListener(() {
       if (usernameMsg != null) {
         setState(() => usernameMsg = null);
@@ -986,6 +1002,14 @@ Future<bool?> _openLoginDialog() async {
             userFocusNode: userFocusNode,
           ),
           thirdAuthWidget(),
+          Obx(() => registrationUri.value == null
+              ? const SizedBox.shrink()
+              : TextButton(
+                  onPressed: curOP.value.isEmpty && !isInProgress
+                      ? () => setState(() => creatingAccount = true)
+                      : null,
+                  child: const Text('Crear cuenta'),
+                )),
         ],
       ),
       onCancel: onDialogCancel,

@@ -2,6 +2,7 @@
 import getpass
 import hashlib
 import os
+import re
 import secrets
 import sqlite3
 import time
@@ -75,7 +76,9 @@ def create_app(database=None):
 
     @app.get('/api/login-options')
     def options():
-        return jsonify([])
+        response = jsonify([])
+        response.headers['X-Asystec-Registration'] = '1'
+        return response
 
     @app.post('/api/login')
     def login():
@@ -85,12 +88,29 @@ def create_app(database=None):
         password = data.get('password')
         if not isinstance(password, str) or not row or not check_password_hash(row[1], password):
             abort(401, 'Usuario o contraseña incorrectos')
+        return session_response(row[0])
+
+    @app.post('/api/asystec/register')
+    def register():
+        data = body()
+        name, password = data.get('username'), data.get('password')
+        if not isinstance(name, str) or not re.fullmatch(r'[A-Za-z0-9._-]{3,40}', name):
+            abort(400, 'Usá entre 3 y 40 letras sin acentos, números, puntos, guiones o guiones bajos.')
+        if not isinstance(password, str) or not 12 <= len(password) <= 128:
+            abort(400, 'La contraseña debe tener entre 12 y 128 caracteres.')
+        try:
+            add_account(connection(), name, password)
+        except sqlite3.IntegrityError:
+            return jsonify(error='Ese usuario ya existe. Iniciá sesión o elegí otro nombre.'), 409
+        return session_response(name), 201
+
+    def session_response(name):
         token = secrets.token_urlsafe(32)
         with connection() as db:
             db.execute('DELETE FROM session WHERE expires<=?', (time.time(),))
             db.execute('INSERT INTO session VALUES(?,?,?)',
-                       (token_digest(token), row[0], int(time.time()) + 30 * 86400))
-        return jsonify(type='access_token', access_token=token, user={'name': row[0]})
+                       (token_digest(token), name, int(time.time()) + 30 * 86400))
+        return jsonify(type='access_token', access_token=token, user={'name': name})
 
     @app.post('/api/currentUser')
     def current_user():

@@ -43,6 +43,34 @@ class SyncTest(unittest.TestCase):
     def sync(self, token, changes=None):
         return self.post('asystec/book', token, {'guid': self.guid, 'changes': changes or {}})
 
+    def test_register_then_sync_from_two_sessions(self):
+        with urlopen(self.url + 'login-options') as res:
+            self.assertEqual(res.getheader('X-Asystec-Registration'), '1')
+            self.assertEqual(json.load(res), [])
+        credentials = {'username': 'pc-user', 'password': 'local-test-password'}
+        session = self.post('asystec/register', data=credentials)
+        first = session['access_token']
+        self.assertEqual(session['user']['name'], 'pc-user')
+        self.guid = self.post('ab/personal', first)['guid']
+        peer = {'alias': 'Caja', 'tags': [], 'note': ''}
+        self.sync(first, {'p:123': {'rev': 0, 'value': peer}})
+        second = self.login('pc-user')
+        self.assertEqual(self.sync(second)['records']['p:123']['value'], peer)
+        with self.assertRaises(HTTPError) as exc:
+            self.sync(self.a)
+        self.assertEqual(exc.exception.code, 403)
+        exc.exception.close()
+
+    def test_register_rejects_invalid_and_duplicate_credentials(self):
+        for user, password, status in [('x', 'long-enough-password', 400),
+                                       ('valid', 'short', 400),
+                                       ('ana', 'other-new-password', 409)]:
+            with self.assertRaises(HTTPError) as exc:
+                self.post('asystec/register', data={'username': user, 'password': password})
+            self.assertEqual(exc.exception.code, status)
+            exc.exception.close()
+        self.assertEqual(self.post('ab/personal', self.login('ana'))['guid'], self.guid)
+
     def test_two_computers_retry_conflict_and_deletion(self):
         key = 'p:123'
         peer = {'alias': 'Caja', 'tags': ['POS'], 'note': 'Local 1'}

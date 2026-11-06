@@ -1,6 +1,6 @@
 {
   "status": "ACTUAL_BUILT_SOURCE",
-  "at_utc": "2026-11-06T16:53:22.125427+00:00",
+  "at_utc": "2026-11-06T18:10:19.235373+00:00",
   "profile": {
     "name": "Asystec Desk",
     "publisher": "Asystec",
@@ -46,7 +46,7 @@
     "appimage/AppImageBuilder-x86_64.yml": "f76cb33e243630f0f15f6135b869ea5dc438c6571cf7d8a330b5a845a36aae29",
     "appimage/apprun-split-arguments.patch": "4ff50c62f0e9b4fb88e524566918a5187ab516e2abfa548c71e421031483c796",
     "appimage/build-apprun.sh": "11bbcdb0c40eae321a7d0f2d9d5c89459adeb8956c23a460c6391097608250a9",
-    "ASYSTEC-CHANGES.patch": "f37e5a2e5ad4a30df7d176416637a97cb302285ee652ee2f9cc6ace41659823f",
+    "ASYSTEC-CHANGES.patch": "fb10b2e9ea537773aa6eaaf899b229f8156a6031f4d7c7948dca2d25a66c6960",
     "ASYSTEC-NOTICE.txt": "abdc7de0970399ca664e9f62945f41b8ce4b99dd7f61240b92574bccb9e371dc",
     "build.py": "88445cdf48d214fd9ff73d7fe2c878ad277f84c31839bb6ac94563d37f281708",
     "build.rs": "3fc72873ebfb2a238a2ab58f69b984c2978829291856bdfe8d0b62dd958f621a",
@@ -61,7 +61,7 @@
     "desktop/assets/logo_light.png": "87a8598d86b3e8814ebd18c8eb62a0ffd3b295254df322990741329a3c2d5010",
     "desktop/assets/tray-icon.ico": "065bed3ba9a871568bf113605fb70e88fcc96147049c39b8dd3f962cf6f18f1e",
     "desktop/assets/wizard.png": "4362e29787b8ef6e34e041f3269e4a866636fd99ffd663f2404af6b8f117dc37",
-    "desktop/Asystec-Desk.iss": "139be6d416aa7888011f98eb74f18bd1629ee4a5470efcd381f412204b7a936c",
+    "desktop/Asystec-Desk.iss": "23ed895c697bf7c57f5a96571aacb6c1f0d3a2b99747dc69f5b42fb7e9bafd7a",
     "desktop/branding/asystec-desk_hoja-de-marca_1920x1080.png": "149271601d25b9dbaaa0b922f03caaa2f5722372bb1348037291f2b134736d44",
     "desktop/branding/asystec-desk_mockup_barra-y-ventana_1920x1080.png": "c9d227dc17e7b56a0f1e45e81ca1a5bac3e6afdb71ef1be8c5dc58994c0e5301",
     "desktop/branding/favicon/favicon-16x16.png": "e4985af09ba15db79721f4863947596f176521283a1edab9f230a227bd32ef40",
@@ -126,7 +126,7 @@
     "desktop/LICENSE.txt": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
     "desktop/make_assets.py": "7adf5313fe27814436b5ef7a5870d9ec90ec482b156a4894913f2dcd1f9f7c85",
     "desktop/package.py": "4bc4a7e14331c4e22ca3c63bd3b3cf39e2d654b27d64e0c337ad3a5a2d48e203",
-    "desktop/prepare.py": "4432f12f58970bcc4a4753a0ff5261f01af10f7da369932ac66a11290fb7bd2e",
+    "desktop/prepare.py": "c6aebcf89389160a847e24420b368886729dd230687ea59aca7e748236dfc7a9",
     "desktop/profile.json": "16591e8374099575f6b810a66c5474026d2c020b301276a87b7fa63fc2738d77",
     "desktop/README.md": "4795e0e8fea660722fc2120643c867b76e46fe28b7afe3e681e090b6643654be",
     "desktop/RELEASE-0.1.0.md": "917a95db8b11e9ca7d73e1aa24b14be6ba800407dac3077fae9e89032db220a6",
@@ -256,7 +256,7 @@
     "flatpak/com.rustdesk.RustDesk.metainfo.xml": "2ab52de846253a5a72a92a70dd872467679ad58a6125bf2668a9b3f4809c150a",
     "flatpak/rustdesk.json": "5f00db966cfa53e3b69967449aaf29095d7edb268d34cf2ef9f6129c082106c5",
     "flutter/.flutter-plugins": "8da50b12f2a580bfbfa0c82779ce93f5d8ac34e167288b505eb5ada1b21575cf",
-    "flutter/.flutter-plugins-dependencies": "f134031a79585a4c873b5263435afe19fffcfc7286ff6b9e1c67d1265436a289",
+    "flutter/.flutter-plugins-dependencies": "87970b115a9844f7156678d0a772f8cf008be54986ee402db44c3ec729104653",
     "flutter/.gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
     "flutter/.gitignore": "2854501f25698ce48f941b5e240601ec1976fcb2759e144a77b25d2e2085c4d5",
     "flutter/.metadata": "804ed7e928536c19d0fd1c6eb91c06efbc252dc12e2c848c57aaf533a398e48e",
@@ -449,7 +449,7 @@
     "flutter/lib/common/widgets/custom_scale_base.dart": "517dfc35c6c95a94e092b9ae16053f3651efcf2d62153da7b563fa0021dfa445",
     "flutter/lib/common/widgets/dialog.dart": "0fe64cf56e2c28a49a52228f244b577b7e19f824d97d80edec549179b199141f",
     "flutter/lib/common/widgets/gestures.dart": "bdd8f3a1ce5a8177854500e26c370d29bcd5df2f62c6136715149c2eff4cee3d",
-    "flutter/lib/common/widgets/login.dart": "cba8ee99aae7dd6b383148441674efb06ef08dd5d4b57bd563e5ad56f609a66a",
+    "flutter/lib/common/widgets/login.dart": "bd5f1cc0191cabc35ee9ec5a07c33b58b2319eaf05ecb4cdd6d60ec7679dc8a2",
     "flutter/lib/common/widgets/my_group.dart": "7c0141d090289dd73aa94d31a090e9255c795ec3c4b2b72672e464e89f640122",
     "flutter/lib/common/widgets/oidc_auth_status.dart": "41d046cc868cea9a88f43015345eaf4d46047342dc82277ee149f3af2821940c",
     "flutter/lib/common/widgets/overlay.dart": "d57ecc281ab34018e03a60aa04292113047291d0cf1a0ebe0463d4f5cd7cc29b",
@@ -544,7 +544,7 @@
     "flutter/lib/models/terminal_mouse_handler_input.dart": "3c0d494fb984a12d467cae73d4449f2af36c7fa126fe63a0f7ae40c077d67e27",
     "flutter/lib/models/terminal_scroll_controller.dart": "ec0c961f2c9b4552b43d2d6760c6943c9663326fdc0e968880e0645b3a2cd49e",
     "flutter/lib/models/terminal_web_clipboard_gesture.dart": "da5701130f4bbf5a208aa9795fe4537630e3474f78c880df8bb81423946b3723",
-    "flutter/lib/models/user_model.dart": "559e8ca722023df915340573261eaea5f4c7aad350bcb6951961afbff3f22715",
+    "flutter/lib/models/user_model.dart": "d75ad7a15d7fdf72b17c392190a756f391e5960da35420f993cda0e6919f64fd",
     "flutter/lib/models/web_model.dart": "9a09612290cdb41a94a5f22b6a7e4ecad559a0378652ada1e727a65cd4357c2b",
     "flutter/lib/models/web_video_frame_queue.dart": "6c6903de159aea1e72b04432b69b80d672e64a64cb5f27347bdd22f6b8e7ad12",
     "flutter/lib/native/common.dart": "88c7b32fdf38d47704d803b2c8296c1ccad9be238ce02b1d72f31c3b4ccab614",
@@ -1186,6 +1186,8 @@
     "src/whiteboard/server.rs": "d66b1477c86a4e1f1aa273306bf47eb883503cdbca09a69e747515d471bd18c3",
     "src/whiteboard/win_linux.rs": "28aa94acd5db78576c0066571ed83110ae7e3034a2b28480385d694ff539e7ff",
     "src/whiteboard/windows.rs": "d7354f564e1521c557afc6d78d6b368bf4ae3dda54876d7850d9e954ccbb5060",
-    "vcpkg.json": "76d14241ec7f6adfba265a217f3b9c27adf47ed8c600085615756934fc155ef3"
+    "vcpkg.json": "76d14241ec7f6adfba265a217f3b9c27adf47ed8c600085615756934fc155ef3",
+    "flutter/lib/common/widgets/book_registration.dart": "5e3638ebd7ee43a7f57714eb4da3aada7fe5e4f6114be60b46777f265a6b288f",
+    "flutter/test/book_registration_test.dart": "776f6544959946a27049b2d29ab1b5ed0e9cb1ca1a7eb14ed740d134a875acfb"
   }
 }

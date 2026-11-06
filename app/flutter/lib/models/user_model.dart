@@ -237,7 +237,8 @@ class UserModel {
   /// Throws on network failures, non-success responses, and invalid response
   /// data. Returns an empty list when no API server is configured or a
   /// successful response contains no third-party login options.
-  static Future<List<dynamic>> queryOidcLoginOptions() async {
+  static Future<List<dynamic>> queryOidcLoginOptions(
+      {void Function(Uri)? onRegistrationAvailable}) async {
     final url = await bind.mainGetApiServer();
     if (url.trim().isEmpty) return [];
     final resp = await http.get(Uri.parse('$url/api/login-options'));
@@ -247,6 +248,10 @@ class UserModel {
         resp.statusCode >= successStatusCodeEnd) {
       throw RequestException(
           resp.statusCode, resp.reasonPhrase ?? 'Request failed');
+    }
+    if (Uri.parse(url).scheme == 'https' &&
+        resp.headers['x-asystec-registration'] == '1') {
+      onRegistrationAvailable?.call(Uri.parse('$url/api/asystec/register'));
     }
     final List<String> ops = [];
     for (final item in jsonDecode(resp.body)) {

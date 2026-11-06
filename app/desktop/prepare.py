@@ -125,6 +125,15 @@ def brand(source, profile, assets):
             "'Asystec Desk · basado en RustDesk\\nModificaciones Asystec, 26-10-2026 · AGPL-3.0',")
     replace("flutter/lib/common.dart", "0xFF2C8CFF", "0xFF064589", count=2)
     replace(settings, "0xFF2c8cff", "0xFF064589")
+    client_source = ROOT / "app" if (ROOT / "app").is_dir() else ROOT
+    for path in ("flutter/lib/common/widgets/login.dart", "flutter/lib/common/widgets/book_registration.dart",
+                 "flutter/lib/common/widgets/address_book.dart", "flutter/lib/models/user_model.dart",
+                 "flutter/lib/models/ab_model.dart", "flutter/lib/models/cloud_ab.dart",
+                 "flutter/lib/models/cloud_replica.dart", "flutter/test/cloud_replica_test.dart",
+                 "flutter/test/book_registration_test.dart"):
+        target = source / path
+        originals[path] = target.read_text(encoding="utf-8") if target.exists() else ""
+        shutil.copyfile(client_source / path, target)
     for filename in ("icon.png", "icon.svg", "logo.png", "logo_light.png", "logo_dark.png"):
         shutil.copy2(assets / filename, source / "flutter/assets" / filename)
     for filename in ("icon.png", "icon.ico", "tray-icon.ico"):

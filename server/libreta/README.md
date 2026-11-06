@@ -4,7 +4,7 @@ Cada técnico tiene una cuenta. Puede iniciar sesión en varias PC y sincronizar
 
 ## Prueba con el servidor Asystec
 
-El instalador de prueba configura y verifica `https://184.197.59.221` (instancia Lightsail `asystec-desk`). Instala el mismo paquete en las dos PC, entra en **Libreta** con la misma cuenta y agrega un equipo desde una de ellas. La cuenta se entrega por separado del instalador.
+El instalador configura `https://184.197.59.221` (instancia Lightsail `asystec-desk`). En la primera PC, abre **Libreta → Iniciar sesión → Crear cuenta**, elige un usuario y una contraseña de 12 a 128 caracteres y confirma el registro. La aplicación inicia sesión y abre tu libreta personal. En la segunda PC, inicia sesión con los mismos datos. Al agregar un equipo a la libreta en una PC, aparecerá en la otra.
 
 En Ubuntu, Nginx termina HTTPS y reenvía las solicitudes a Waitress en loopback. El servicio `asystec-book.service` usa la base `/var/lib/asystec-book/libreta.sqlite3`. El temporizador `asystec-book-renew.timer` comprueba el certificado dos veces al día y recarga Nginx al renovarlo. Para verificar el acceso desde otra red, consulta `https://184.197.59.221/api/login-options` y espera la respuesta `[]`.
 

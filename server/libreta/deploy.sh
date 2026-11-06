@@ -53,12 +53,19 @@ chmod 755 /etc/letsencrypt/renewal-hooks/deploy/asystec-nginx
 "$acme" certonly --non-interactive --agree-tos --register-unsafely-without-email --preferred-profile shortlived --webroot -w /var/www/asystec-acme --ip-address "$ip" --cert-name asystec-book --keep-until-expiring
 cat >/etc/nginx/conf.d/asystec-book-tls.conf <<'NGINX'
 limit_req_zone $binary_remote_addr zone=book_login:1m rate=5r/m;
+limit_req_zone $binary_remote_addr zone=book_signup:1m rate=1r/m;
 server {
     listen 443 ssl default_server;
     server_name 184.197.59.221;
     ssl_certificate /etc/letsencrypt/live/asystec-book/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/asystec-book/privkey.pem;
     client_max_body_size 2m;
+    location = /api/asystec/register {
+        client_max_body_size 4k;
+        limit_req zone=book_signup burst=3 nodelay;
+        limit_req_status 429;
+        proxy_pass http://127.0.0.1:8787;
+    }
     location = /api/login {
         limit_req zone=book_login burst=5 nodelay;
         limit_req_status 429;

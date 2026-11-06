@@ -369,3 +369,249 @@
  }
  
  Widget msgboxIcon(String type) {
+--- a/flutter/lib/common/widgets/login.dart
++++ b/flutter/lib/common/widgets/login.dart
+@@ -12,6 +12,7 @@
+ 
+ import '../../common.dart';
+ import './dialog.dart';
++import './book_registration.dart';
+ import './oidc_auth_status.dart';
+ 
+ const kOpSvgList = [
+@@ -735,12 +736,16 @@
+   bool isCloseHovered = false;
+ 
+   final loginOptions = [].obs;
++  final registrationUri = Rxn<Uri>();
++  bool creatingAccount = false;
+   final loginOptionsError = Rxn<Object>();
+   final loginOptionsInProgress = false.obs;
+   fetchLoginOptions() async {
+     loginOptionsInProgress.value = true;
+     try {
+-      loginOptions.value = await UserModel.queryOidcLoginOptions();
++      registrationUri.value = null;
++      loginOptions.value = await UserModel.queryOidcLoginOptions(
++          onRegistrationAvailable: (uri) => registrationUri.value = uri);
+       loginOptionsError.value = null;
+     } catch (e) {
+       debugPrint("queryOidcLoginOptions failed: $e");
+@@ -753,6 +758,17 @@
+   Future.delayed(Duration.zero, fetchLoginOptions);
+ 
+   final res = await gFFI.dialogManager.show<bool>((setState, close, context) {
++    if (creatingAccount && registrationUri.value != null) {
++      return CustomAlertDialog(
++        title: const Text('Crear cuenta'),
++        contentBoxConstraints: const BoxConstraints(maxWidth: 380),
++        content: BookRegistration(
++          uri: registrationUri.value!,
++          onBack: () => setState(() => creatingAccount = false),
++          onRegistered: () => close(true),
++        ),
++      );
++    }
+     username.addListener(() {
+       if (usernameMsg != null) {
+         setState(() => usernameMsg = null);
+@@ -986,6 +1002,14 @@
+             userFocusNode: userFocusNode,
+           ),
+           thirdAuthWidget(),
++          Obx(() => registrationUri.value == null
++              ? const SizedBox.shrink()
++              : TextButton(
++                  onPressed: curOP.value.isEmpty && !isInProgress
++                      ? () => setState(() => creatingAccount = true)
++                      : null,
++                  child: const Text('Crear cuenta'),
++                )),
+         ],
+       ),
+       onCancel: onDialogCancel,
+--- /dev/null
++++ b/flutter/lib/common/widgets/book_registration.dart
+@@ -0,0 +1,131 @@
++import 'dart:convert';
++
++import 'package:flutter/material.dart';
++import '../../common.dart';
++import '../../models/platform_model.dart';
++import '../../utils/http_service.dart' as http;
++
++class BookRegistration extends StatefulWidget {
++  final Uri uri;
++  final VoidCallback onBack;
++  final VoidCallback onRegistered;
++
++  const BookRegistration({
++    super.key,
++    required this.uri,
++    required this.onBack,
++    required this.onRegistered,
++  });
++
++  @override
++  State<BookRegistration> createState() => _BookRegistrationState();
++}
++
++class _BookRegistrationState extends State<BookRegistration> {
++  final _name = TextEditingController();
++  final _password = TextEditingController();
++  final _repeat = TextEditingController();
++  bool _busy = false;
++  String? _error;
++
++  @override
++  void dispose() {
++    _name.dispose();
++    _password.dispose();
++    _repeat.dispose();
++    super.dispose();
++  }
++
++  Future<void> _submit() async {
++    if (_busy) return;
++    final name = _name.text.trim();
++    final password = _password.text;
++    String? error;
++    if (!RegExp(r'^[A-Za-z0-9._-]{3,40}$').hasMatch(name)) {
++      error =
++          'Usá de 3 a 40 letras sin acentos, números, puntos o guiones para el usuario.';
++    } else if (password.runes.length < 12 || password.runes.length > 128) {
++      error = 'La contraseña debe tener entre 12 y 128 caracteres.';
++    } else if (password != _repeat.text) {
++      error = 'Las contraseñas no coinciden.';
++    }
++    setState(() {
++      _error = error;
++      _busy = error == null;
++    });
++    if (error != null) return;
++    try {
++      final response = await http.post(widget.uri,
++          body: jsonEncode({'username': name, 'password': password}));
++      if (!mounted) return;
++      if (response.statusCode == 201) {
++        final data = jsonDecode(decode_http_response(response));
++        if (data['type'] == 'access_token' &&
++            data['access_token'] is String &&
++            data['user']?['name'] == name) {
++          final resp = gFFI.userModel.getLoginResponseFromAuthBody(data);
++          await bind.mainSetLocalOption(
++              key: 'user_info', value: jsonEncode(resp.user));
++          await bind.mainSetLocalOption(
++              key: 'access_token', value: resp.access_token!);
++          if (mounted) widget.onRegistered();
++          return;
++        }
++      } else if (response.statusCode == 409) {
++        error =
++            'Ese usuario ya existe. Volvé a iniciar sesión o elegí otro nombre.';
++      } else if (response.statusCode == 429) {
++        error =
++            'Hubo varios intentos. Esperá un minuto antes de volver a probar.';
++      }
++      error ??=
++          'No se pudo completar el registro (HTTP ${response.statusCode}).';
++    } catch (_) {
++      error =
++          'No se pudo confirmar el registro. Revisá la conexión e intentá iniciar sesión.';
++    } finally {
++      if (mounted && error != null) {
++        setState(() {
++          _busy = false;
++          _error = error;
++        });
++      }
++    }
++  }
++
++  @override
++  Widget build(BuildContext context) =>
++      Column(mainAxisSize: MainAxisSize.min, children: [
++        const Text('Usá esta cuenta en tus PC para sincronizar la libreta.'),
++        TextField(
++            controller: _name,
++            autofocus: true,
++            enabled: !_busy,
++            decoration: const InputDecoration(labelText: 'Usuario')),
++        TextField(
++            controller: _password,
++            obscureText: true,
++            enabled: !_busy,
++            decoration: const InputDecoration(
++                labelText: 'Contraseña', helperText: 'De 12 a 128 caracteres')),
++        TextField(
++            controller: _repeat,
++            onSubmitted: (_) => _submit(),
++            obscureText: true,
++            enabled: !_busy,
++            decoration: const InputDecoration(labelText: 'Repetir contraseña')),
++        if (_error != null)
++          Text(_error!,
++              style: TextStyle(color: Theme.of(context).colorScheme.error)),
++        if (_busy) const LinearProgressIndicator(),
++        const SizedBox(height: 16),
++        Row(mainAxisAlignment: MainAxisAlignment.end, children: [
++          TextButton(
++              onPressed: _busy ? null : widget.onBack,
++              child: const Text('Volver')),
++          ElevatedButton(
++              onPressed: _busy ? null : _submit,
++              child: const Text('Crear cuenta')),
++        ]),
++      ]);
++}
+--- a/flutter/lib/models/user_model.dart
++++ b/flutter/lib/models/user_model.dart
+@@ -237,7 +237,8 @@
+   /// Throws on network failures, non-success responses, and invalid response
+   /// data. Returns an empty list when no API server is configured or a
+   /// successful response contains no third-party login options.
+-  static Future<List<dynamic>> queryOidcLoginOptions() async {
++  static Future<List<dynamic>> queryOidcLoginOptions(
++      {void Function(Uri)? onRegistrationAvailable}) async {
+     final url = await bind.mainGetApiServer();
+     if (url.trim().isEmpty) return [];
+     final resp = await http.get(Uri.parse('$url/api/login-options'));
+@@ -248,6 +249,10 @@
+       throw RequestException(
+           resp.statusCode, resp.reasonPhrase ?? 'Request failed');
+     }
++    if (Uri.parse(url).scheme == 'https' &&
++        resp.headers['x-asystec-registration'] == '1') {
++      onRegistrationAvailable?.call(Uri.parse('$url/api/asystec/register'));
++    }
+     final List<String> ops = [];
+     for (final item in jsonDecode(resp.body)) {
+       ops.add(item as String);
+--- /dev/null
++++ b/flutter/test/book_registration_test.dart
+@@ -0,0 +1,25 @@
++import 'package:flutter/material.dart';
++import 'package:flutter_hbb/common/widgets/book_registration.dart';
++import 'package:flutter_test/flutter_test.dart';
++
++void main() {
++  testWidgets('checks password confirmation and allows returning to login',
++      (tester) async {
++    var returned = false;
++    await tester.pumpWidget(MaterialApp(
++        home: Scaffold(
++            body: BookRegistration(
++                uri: Uri.https('example.invalid', '/api/asystec/register'),
++                onBack: () => returned = true,
++                onRegistered: () => fail('Invalid input was accepted')))));
++    final fields = find.byType(TextField);
++    await tester.enterText(fields.at(0), 'soporte');
++    await tester.enterText(fields.at(1), 'password-de-prueba');
++    await tester.enterText(fields.at(2), 'diferente');
++    await tester.tap(find.text('Crear cuenta'));
++    await tester.pump();
++    expect(find.text('Las contraseñas no coinciden.'), findsOneWidget);
++    await tester.tap(find.text('Volver'));
++    expect(returned, isTrue);
++  });
++}
