@@ -70,6 +70,8 @@ def brand(source, profile, assets):
             f'pub const RENDEZVOUS_SERVERS: &[&str] = &[{quote(profile["id_server"])}];')
     replace(config, 'pub const RS_PUB_KEY: &str = "OeVuKk5nlHiXp+APNn0Y3pC1Iwpwn44JGqrQCsWqmBw=";',
             f'pub const RS_PUB_KEY: &str = {quote(profile["public_key"])};')
+    replace("src/ui_session_interface.rs", 'let token = LocalConfig::get_option("access_token");',
+            '// The Asystec book token belongs to its HTTPS API. The OSS rendezvous and relay use the server key.\n    let token = String::new();')
     network = {
         "custom-rendezvous-server": profile["id_server"],
         "relay-server": profile["relay_server"],

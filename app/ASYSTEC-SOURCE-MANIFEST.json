@@ -7,7 +7,7 @@
     "id_server": "184.197.59.221",
     "relay_server": "184.197.59.221:21117",
     "public_key": "6o6MWnTv2Vh6l+1oCrfEnlUSNQmMXaaLpqctaNcCulg=",
-    "api_server": "",
+    "api_server": "https://184.197.59.221",
     "release_status": "DEVELOPMENT_ONLY",
     "upstream": {
       "version": "1.5.0",
@@ -60,7 +60,7 @@
     "desktop/assets/logo_light.png": "87a8598d86b3e8814ebd18c8eb62a0ffd3b295254df322990741329a3c2d5010",
     "desktop/assets/tray-icon.ico": "065bed3ba9a871568bf113605fb70e88fcc96147049c39b8dd3f962cf6f18f1e",
     "desktop/assets/wizard.png": "4362e29787b8ef6e34e041f3269e4a866636fd99ffd663f2404af6b8f117dc37",
-    "desktop/Asystec-Desk.iss": "c16eb93ea7e214b02b0caf9383f61d3d7b77960533f12945b8e26409d8449064",
+    "desktop/Asystec-Desk.iss": "ac7e3b09b47e3fe8cd8f1dd806374f6f47765363245692d3de83edf14f68055d",
     "desktop/branding/asystec-desk_hoja-de-marca_1920x1080.png": "149271601d25b9dbaaa0b922f03caaa2f5722372bb1348037291f2b134736d44",
     "desktop/branding/asystec-desk_mockup_barra-y-ventana_1920x1080.png": "c9d227dc17e7b56a0f1e45e81ca1a5bac3e6afdb71ef1be8c5dc58994c0e5301",
     "desktop/branding/favicon/favicon-16x16.png": "e4985af09ba15db79721f4863947596f176521283a1edab9f230a227bd32ef40",
@@ -125,7 +125,7 @@
     "desktop/LICENSE.txt": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
     "desktop/make_assets.py": "7adf5313fe27814436b5ef7a5870d9ec90ec482b156a4894913f2dcd1f9f7c85",
     "desktop/package.py": "4bc4a7e14331c4e22ca3c63bd3b3cf39e2d654b27d64e0c337ad3a5a2d48e203",
-    "desktop/prepare.py": "b9b23cef6dd775446f283fed7212f51cea38af2e70f080e910c7f3321c730b6d",
+    "desktop/prepare.py": "b758ccc9a0ed94d90a30b189c850b7bf385caf5dcbf54f22c8f4484bea9c1a71",
     "desktop/profile.json": "e2b9ac32e391f79a13fb6315c536865cef40356bddd723b9fa584bdc505796b8",
     "desktop/README.md": "4795e0e8fea660722fc2120643c867b76e46fe28b7afe3e681e090b6643654be",
     "desktop/RELEASE-0.1.0.md": "917a95db8b11e9ca7d73e1aa24b14be6ba800407dac3077fae9e89032db220a6",
@@ -1174,9 +1174,9 @@
     "src/ui.rs": "997ff98d765c4a9d7ffe81485b37fb688393fe5f9c54195a347cc8198c53967d",
     "src/ui_cm_interface.rs": "56bff19ddf08e9d5079d257f3918b36b3790c8f35d8ab45fb91bfd4a24772c1d",
     "src/ui_interface.rs": "2ec26030205c7cd5a73808886f2350dc40360043dfbbb44a756026197da153b3",
-    "src/ui_session_interface.rs": "f9418fb724fea6f5948cc34cf4a73ece30fdd8871515ab2b267db2816b92dbeb",
+    "src/ui_session_interface.rs": "7b7a6380b66d15f2b3791ad1f0ad873454db0950c6cbbbeed81e593cfcb3c1b7",
     "src/updater.rs": "6848dd1e4ad1397b64838cab450e832377dbc3b707fb36263f8724567659dbfb",
-    "src/version.rs": "d264e760da71623a16cdd7881f7c60da2c7d0736e5667a8e3415ebf3403cba71",
+    "src/version.rs": "6f0510604f6826af38de3f523f585279b90ae5b50f8dfb4e6c6a78c76cb440d9",
     "src/virtual_display_manager.rs": "21887d1e71e3155a5d0630fbd33151daa7fe433d74886dbe570eda916004e96f",
     "src/whiteboard/client.rs": "a8630179efa1fac190a6f4ab84338e12fad35b00bab3a3310653929b6af9b262",
     "src/whiteboard/linux.rs": "2fb532f541ec2406fee60918c172e2e81ce50552110bf431a22012a210b80baa",
@@ -1190,5 +1190,5 @@
     "flutter/test/book_registration_test.dart": "776f6544959946a27049b2d29ab1b5ed0e9cb1ca1a7eb14ed740d134a875acfb",
     "desktop/Register-BookDevice.ps1": "89d9e896d4e9691b54ae8308d6203b0f569d6a84689d7b7c926444fd74c0666c"
   },
-  "at_utc": "2026-11-06T18:45:40.596983+00:00"
+  "at_utc": "2026-11-06T19:16:48.806853+00:00"
 }
