@@ -12,6 +12,46 @@ class CloudAb extends Ab {
   final conflicts = <String>[].obs;
   CloudReplica _replica = CloudReplica();
   String get _key => '${locator(endpoint, owner)}-${profile.guid}';
+  Map<String, dynamic>? _credentials;
+  bool canStorePassword(String id) => Uri.tryParse(endpoint)?.scheme == 'https' &&
+      _credentials != null && RegExp(r'^[0-9]{1,16}$').hasMatch(id) &&
+      _replica.records['p:$id']?['value'] != null;
+  bool hasPassword(String id) => _credentials?[id]?['saved'] == true;
+  int credentialRevision(String id) => _credentials?[id]?['rev'] ?? 0;
+  int peerRevision(String id) => _replica.records['p:$id']?['rev'] ?? 0;
+
+  Future<Map<String, dynamic>> credentialRequest(String id,
+      {Map<String, dynamic>? change}) async {
+    final token = bind.mainGetLocalOption(key: 'access_token');
+    bool current() => token.isNotEmpty && identical(gFFI.abModel.current, this) &&
+        owner == gFFI.userModel.userName.value &&
+        token == bind.mainGetLocalOption(key: 'access_token');
+    if (!canStorePassword(id) || endpoint != await bind.mainGetApiServer() || !current()) {
+      throw StateError('La sesión de la libreta cambió.');
+    }
+    final client = credential_http.Client();
+    try {
+      final request = credential_http.Request('POST', Uri.parse('$endpoint/api/asystec/credential'))
+        ..followRedirects = false
+        ..headers.addAll({'Authorization': 'Bearer $token', 'Content-Type': 'application/json'})
+        ..body = jsonEncode({'guid': profile.guid, 'id': id, ...?change});
+      final response = await client.send(request).then(credential_http.Response.fromStream)
+          .timeout(const Duration(seconds: 8));
+      if (!current() || endpoint != await bind.mainGetApiServer() || !current()) {
+        throw StateError('La sesión de la libreta cambió.');
+      }
+      if (response.statusCode == 409) {
+        throw StateError('El equipo cambió en otra PC. Volvé a abrir su menú.');
+      }
+      if (response.statusCode != 200) throw StateError('La libreta no está disponible.');
+      final result = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+      if (change != null) _credentials?[id] = result;
+      return result;
+    } finally {
+      client.close();
+    }
+  }
+
   bool _sending = false;
   Future<void> _writes = Future.value();
   bool _readable = true;
@@ -105,6 +145,7 @@ class CloudAb extends Ab {
         return true;
       }
       final data = jsonDecode(decode_http_response(resp));
+      _credentials = data['credentials'];
       conflicts.assignAll(_replica.receive(sent, data));
       _render();
       await _save();

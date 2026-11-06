@@ -17,6 +17,7 @@ import 'package:flutter_hbb/utils/http_service.dart' as http;
 
 import '../../common.dart';
 import '../../models/model.dart';
+import '../../models/ab_model.dart';
 import '../../models/platform_model.dart';
 import 'address_book.dart';
 
@@ -2570,6 +2571,52 @@ void addPeersToAbDialog(
       onCancel: cancel,
     );
   });
+}
+
+Future<void> editCloudPassword(BuildContext context, CloudAb book, Peer peer) async {
+  final rev = book.credentialRevision(peer.id);
+  final peerRev = book.peerRevision(peer.id);
+  final saved = book.hasPassword(peer.id);
+  String input = '';
+  bool busy = false;
+  String? error;
+  await showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (ctx) => StatefulBuilder(builder: (ctx, update) {
+      Future<void> save(String? value) async {
+        if (busy) return;
+        update(() { busy = true; error = null; });
+        try {
+          await book.credentialRequest(peer.id, change: {
+            'rev': rev, 'peerRev': peerRev, 'password': value,
+          });
+          if (ctx.mounted) Navigator.pop(ctx);
+          showToast(value == null ? 'Contraseña eliminada de la libreta.' : 'Contraseña guardada en la libreta.');
+        } catch (e) {
+          if (ctx.mounted) update(() {
+            busy = false;
+            error = e is StateError ? e.message.toString() : 'No se pudo guardar el cambio. Revisá tu conexión.';
+          });
+        }
+      }
+      return AlertDialog(
+        title: Text(peer.alias.isEmpty ? peer.id : peer.alias),
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text('Las PC que inicien sesión con la cuenta ${book.owner} podrán usar esta contraseña para conectarse.'),
+          TextField(autofocus: true, obscureText: true, enableSuggestions: false,
+            autocorrect: false, enabled: !busy, maxLength: 256,
+            decoration: InputDecoration(labelText: saved ? 'Nueva contraseña del equipo' : 'Contraseña del equipo', errorText: error),
+            onChanged: (s) => update(() => input = s)),
+        ]),
+        actions: [
+          TextButton(onPressed: busy ? null : () => Navigator.pop(ctx), child: const Text('Cancelar')),
+          if (saved) TextButton(onPressed: busy ? null : () => save(null), child: const Text('Quitar de la libreta')),
+          TextButton(onPressed: busy || input.isEmpty ? null : () => save(input), child: const Text('Guardar')),
+        ],
+      );
+    }),
+  );
 }
 
 void setSharedAbPasswordDialog(String abName, Peer peer) {

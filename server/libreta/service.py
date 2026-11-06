@@ -12,6 +12,8 @@ from contextlib import closing
 from pathlib import Path
 
 import click
+from cryptography.exceptions import InvalidTag
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from flask import Flask, abort, g, jsonify, request
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -20,6 +22,8 @@ def create_app(database=None):
     app = Flask(__name__)
     app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
     path = Path(database or os.environ.get('BOOK_DB', 'libreta.sqlite3')).resolve()
+    key_file = os.environ.get('BOOK_CREDENTIAL_KEY')
+    vault = AESGCM(Path(key_file).read_bytes()) if key_file else None
     with closing(sqlite3.connect(path)) as db:
         db.executescript("""
             PRAGMA journal_mode=WAL;
@@ -30,6 +34,9 @@ def create_app(database=None):
             CREATE TABLE IF NOT EXISTS entry(
               owner TEXT NOT NULL, key TEXT NOT NULL, revision INTEGER NOT NULL,
               value TEXT NOT NULL, PRIMARY KEY(owner,key));
+            CREATE TABLE IF NOT EXISTS credential(
+              owner TEXT NOT NULL, peer TEXT NOT NULL, revision INTEGER NOT NULL,
+              sealed BLOB, PRIMARY KEY(owner,peer));
         """)
 
     def connection():
@@ -170,8 +177,62 @@ def create_app(database=None):
             if not conflicts:
                 for key, rev, value in updates:
                     db.execute('INSERT OR REPLACE INTO entry VALUES(?,?,?,?)', (name, key, rev, app.json.dumps(value)))
+                    if value is None and key.startswith('p:'):
+                        db.execute('DELETE FROM credential WHERE owner=? AND peer=?', (name, key[2:]))
                     records[key] = dict(rev=rev, value=value)
-        return jsonify(records=records, conflicts=conflicts)
+            extra = {}
+            if vault is not None:
+                extra['credentials'] = {peer: {'rev': rev, 'saved': bool(saved)} for peer, rev, saved in
+                    db.execute('SELECT peer,revision,sealed IS NOT NULL FROM credential WHERE owner=?', (name,))}
+        return jsonify(records=records, conflicts=conflicts, **extra)
+
+    @app.post('/api/asystec/credential')
+    def credential():
+        name, guid, _ = identity()
+        data = body()
+        if data.get('guid') != guid:
+            abort(403)
+        if vault is None:
+            abort(503)
+        peer = data.get('id')
+        if not isinstance(peer, str) or not re.fullmatch(r'[0-9]{1,16}', peer):
+            abort(400)
+        writing = 'password' in data
+        fields = {'guid', 'id'} | ({'password', 'rev', 'peerRev'} if writing else set())
+        if set(data) != fields:
+            abort(400)
+        if writing and (type(data['rev']) is not int or type(data['peerRev']) is not int or
+                        data['rev'] < 0 or data['peerRev'] < 1 or
+                        (data['password'] is not None and (not isinstance(data['password'], str) or
+                         not 1 <= len(data['password']) <= 256))):
+            abort(400)
+        db = connection()
+        aad = json.dumps([guid, peer], separators=(',', ':')).encode()
+        with db:
+            db.execute('BEGIN IMMEDIATE' if writing else 'BEGIN')
+            entry = db.execute('SELECT revision,value FROM entry WHERE owner=? AND key=?',
+                               (name, 'p:' + peer)).fetchone()
+            if not entry or json.loads(entry[1]) is None:
+                abort(404)
+            rev, sealed = db.execute('SELECT revision,sealed FROM credential WHERE owner=? AND peer=?',
+                                     (name, peer)).fetchone() or (0, None)
+            if writing:
+                if data['rev'] != rev or data['peerRev'] != entry[0]:
+                    abort(409)
+                sealed = None
+                if data['password'] is not None:
+                    nonce = secrets.token_bytes(12)
+                    sealed = nonce + vault.encrypt(nonce, data['password'].encode(), aad)
+                db.execute('INSERT OR REPLACE INTO credential VALUES(?,?,?,?)', (name, peer, rev + 1, sealed))
+                response = jsonify(rev=rev + 1, saved=sealed is not None)
+            else:
+                try:
+                    password = None if sealed is None else vault.decrypt(sealed[:12], sealed[12:], aad).decode()
+                except (InvalidTag, ValueError):
+                    abort(503)
+                response = jsonify(password=password)
+        response.headers['Cache-Control'] = 'no-store'
+        return response
 
     @app.post('/api/asystec/enroll')
     def enroll():

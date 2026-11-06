@@ -11,8 +11,8 @@
 [Setup]
 AppId=AsystecDeskBootstrap
 AppName=Asystec Desk
-AppVersion=0.1.8
-VersionInfoVersion=0.1.8.0
+AppVersion=0.1.9
+VersionInfoVersion=0.1.9.0
 AppPublisher=Asystec
 AppPublisherURL=https://asystec.io
 DefaultDirName={autopf}\Asystec Desk

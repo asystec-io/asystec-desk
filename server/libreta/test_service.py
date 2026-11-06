@@ -21,7 +21,10 @@ class SyncTest(unittest.TestCase):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         self.db = Path(tmp.name) / 'book.sqlite'
-        app = create_app(self.db)
+        key = self.db.with_name('vault.key')
+        key.write_bytes(bytes(range(32)))
+        with patch.dict('os.environ', BOOK_CREDENTIAL_KEY=str(key)):
+            app = create_app(self.db)
         with closing(sqlite3.connect(self.db)) as db:
             for name in ('ana', 'bea'):
                 add_account(db, name, 'local-test-password')
@@ -45,6 +48,44 @@ class SyncTest(unittest.TestCase):
 
     def sync(self, token, changes=None):
         return self.post('asystec/book', token, {'guid': self.guid, 'changes': changes or {}})
+
+    def test_credential_two_sessions_isolated_encrypted_and_revocable(self):
+        peer = '123456789'
+        args = dict(id=peer, guid=self.guid)
+        route = 'asystec/credential'
+        key = 'p:' + peer
+        def denied(status, token, data):
+            with self.assertRaises(HTTPError) as exc:
+                self.post(route, token, data)
+            self.assertEqual(exc.exception.code, status)
+            exc.exception.close()
+        values = dict(alias='Terminal', tags=[], note='')
+        self.sync(self.a, {key: dict(rev=0, value=values)})
+        secret = 'test-only-remote-password'
+        write = dict(args, rev=0, peerRev=1, password=secret)
+        self.assertTrue(self.post(route, self.a, write)['saved'])
+        self.assertEqual(self.post(route, self.b, args)['password'], secret)
+        denied(401, '', args)
+        denied(403, self.login('bea'), args)
+        denied(409, self.b, write)
+        snapshot = self.sync(self.b)
+        self.assertEqual(snapshot['credentials'][peer], dict(saved=True, rev=1))
+        self.assertNotIn(secret, json.dumps(snapshot))
+        with closing(sqlite3.connect(self.db)) as db:
+            sealed = db.execute('SELECT sealed FROM credential').fetchone()[0]
+            self.assertNotIn(secret.encode(), sealed)
+            with db:
+                db.execute('UPDATE credential SET sealed=?', (sealed[:-1] + bytes([sealed[-1] ^ 1]),))
+        denied(503, self.a, args)
+        self.post(route, self.b, dict(args, rev=1, peerRev=1, password=None))
+        self.assertIsNone(self.post(route, self.a, args)['password'])
+        self.sync(self.a, {key: dict(rev=1, value=None)})
+        denied(404, self.a, args)
+        self.sync(self.b, {key: dict(rev=2, value=values)})
+        denied(409, self.b, write)
+        self.assertIsNone(self.post(route, self.a, args)['password'])
+        self.post('logout', self.a)
+        denied(401, self.a, args)
 
     def test_register_then_sync_from_two_sessions(self):
         with urlopen(self.url + 'login-options') as res:

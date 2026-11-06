@@ -39,8 +39,7 @@ Future<void> main(List<String> args) async {
   earlyAssert();
   WidgetsFlutterBinding.ensureInitialized();
 
-  debugPrint("launch args: $args");
-  kBootArgs = List.from(args);
+  kBootArgs = args.isNotEmpty && args.first == 'multi_window' ? [] : List.from(args);
 
   if (!isDesktop) {
     runMobileApp();

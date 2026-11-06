@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import '../../common.dart';
 import '../../common/formatter/id_formatter.dart';
 import '../../models/peer_model.dart';
+import '../../models/ab_model.dart';
 import '../../models/platform_model.dart';
 import '../../desktop/widgets/material_mod_popup_menu.dart' as mod_menu;
 import '../../desktop/widgets/popup_menu.dart';
@@ -1179,6 +1180,17 @@ class AddressBookPeerCard extends BasePeerCard {
       if (isMobile || isDesktop || isWebDesktop) {
         menuItems.add(_renameAction(peer.id));
       }
+      final book = gFFI.abModel.current;
+      if (book is CloudAb && book.canStorePassword(peer.id)) {
+        menuItems.add(MenuEntryButton<String>(
+          childBuilder: (style) => Text(book.hasPassword(peer.id)
+              ? 'Administrar contraseña en la libreta'
+              : 'Guardar contraseña en la libreta', style: style),
+          proc: () => editCloudPassword(context, book, peer),
+          padding: menuPadding,
+          dismissOnClicked: true,
+        ));
+      }
       if (gFFI.abModel.current.isPersonal() && peer.hash.isNotEmpty) {
         menuItems.add(_unrememberPasswordAction(peer.id));
       }
@@ -1556,7 +1568,18 @@ void connectInPeerTab(BuildContext context, Peer peer, PeerTabIndex tab,
         alias: peer.alias,
       );
     }
-    if (!gFFI.abModel.current.isPersonal()) {
+    final book = gFFI.abModel.current;
+    if (book is CloudAb && book.hasPassword(peer.id) &&
+        !(isFileTransfer || isViewCamera || isTcpTunneling || isRDP || isTerminal)) {
+      try {
+        final result = await book.credentialRequest(peer.id);
+        password = result['password'] as String? ?? '';
+        isSharedPassword = password.isNotEmpty;
+      } catch (_) {
+        showToast('No se pudo leer la contraseña de la libreta. Podés ingresarla manualmente.');
+      }
+    }
+    if (!book.isPersonal()) {
       if (peer.password.isNotEmpty) {
         password = peer.password;
         isSharedPassword = true;

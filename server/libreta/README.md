@@ -1,6 +1,14 @@
 # Libreta personal de Asystec Desk
 
-Cada técnico tiene una cuenta. Puede iniciar sesión en varias PC y sincronizar ID, alias, etiquetas y notas. Las contraseñas de acceso remoto se administran en cada equipo. Esta versión admite la libreta personal.
+Cada técnico tiene una cuenta. Puede iniciar sesión en varias PC y sincronizar ID, alias, etiquetas y notas. Desde el cliente 0.1.9, el menú del equipo también permite guardar su contraseña en la libreta personal. Esta versión admite la libreta personal.
+
+### Contraseña guardada en la libreta
+
+En Windows, abrí la libreta, pulsá los tres puntos del equipo y elegí **Guardar contraseña en la libreta**. Ingresá la contraseña permanente del equipo. Al iniciar sesión con esa misma cuenta en otra PC y pulsar **Conectar**, el cliente recupera la contraseña por HTTPS. **Administrar contraseña en la libreta** permite reemplazarla o quitarla. Eliminar un equipo elimina también su contraseña guardada.
+
+La API usa AES-256-GCM con un nonce aleatorio por escritura y vincula cada valor al identificador de la libreta y al ID del equipo. La sincronización habitual solo entrega el estado y la revisión de la contraseña. La API puede descifrarla y las sesiones autorizadas de esa cuenta pueden usarla. El respaldo de la base y el de la clave deben guardarse por separado. Quien tenga ambos puede descifrar los valores.
+
+Para actualizar una instalación del servicio, ejecutá `sudo bash enable-credentials.sh` desde la carpeta de la API que contiene el código nuevo. La clave se conserva en `/etc/asystec-book/vault.key` con acceso exclusivo de root y systemd la entrega al proceso de la API. Respaldala en el gestor de secretos antes de depender de la función. Para restaurar en otro servidor, recuperá la misma clave junto con la base. Los clientes anteriores pueden seguir editando alias y notas sin sobrescribir contraseñas.
 
 ### Alta de equipos durante la instalación
 

@@ -35,7 +35,7 @@ WantedBy=multi-user.target
 UNIT
 systemctl daemon-reload
 systemctl enable --now asystec-book
-systemctl restart asystec-book
+bash enable-credentials.sh
 ufw allow proto tcp from 0.0.0.0/0 to any port 80
 ufw allow proto tcp from 0.0.0.0/0 to any port 443
 cat >/etc/nginx/conf.d/asystec-book-http.conf <<'NGINX'
