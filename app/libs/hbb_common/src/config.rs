@@ -78,8 +78,7 @@ lazy_static::lazy_static! {
     pub static ref OVERWRITE_SETTINGS: RwLock<HashMap<String, String>> = RwLock::new(HashMap::from([
         ("custom-rendezvous-server".to_owned(), "184.197.59.221".to_owned()),
         ("relay-server".to_owned(), "184.197.59.221:21117".to_owned()),
-        ("key".to_owned(), "6o6MWnTv2Vh6l+1oCrfEnlUSNQmMXaaLpqctaNcCulg=".to_owned()),
-        ("api-server".to_owned(), "".to_owned())
+        ("key".to_owned(), "6o6MWnTv2Vh6l+1oCrfEnlUSNQmMXaaLpqctaNcCulg=".to_owned())
     ]));
     pub static ref DEFAULT_DISPLAY_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
     pub static ref OVERWRITE_DISPLAY_SETTINGS: RwLock<HashMap<String, String>> = Default::default();

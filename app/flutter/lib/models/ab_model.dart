@@ -13,6 +13,9 @@ import 'package:bot_toast/bot_toast.dart';
 
 import '../utils/http_service.dart' as http;
 import '../common.dart';
+import 'cloud_replica.dart';
+
+part 'cloud_ab.dart';
 
 final syncAbOption = 'sync-ab-with-recent-sessions';
 bool shouldSyncAb() {
@@ -85,6 +88,10 @@ class AbModel {
         loadEvent: LoadEvent.addressBook);
     if (desktopType == DesktopType.main) {
       Timer.periodic(Duration(milliseconds: 500), (timer) async {
+        final book = current;
+        if (book is CloudAb && _timerCounter % 20 == 0 && gFFI.userModel.isLogin) {
+          book.pullAbImpl(quiet: true);
+        }
         if (_timerCounter++ % 6 == 0) {
           if (!gFFI.userModel.isLogin) return;
           if (!listInitialized) return;
@@ -121,7 +128,10 @@ class AbModel {
       {required ForcePullAb? force, required bool quiet}) async {
     if (bind.isDisableAb()) return;
     if (!gFFI.userModel.isLogin) return;
-    if (gFFI.userModel.networkError.isNotEmpty) return;
+    if (gFFI.userModel.networkError.isNotEmpty) {
+      await _restoreCloud(gFFI.userModel.userName.value);
+      return;
+    }
     if (_pulling) return;
     if (force == null && _pulledOnce) {
       return;
@@ -166,7 +176,16 @@ class AbModel {
               abProfiles.firstWhereOrNull((e) => e.name == key) == null);
           for (int i = 0; i < abProfiles.length; i++) {
             AbProfile p = abProfiles[i];
-            if (addressbooks.containsKey(p.name)) {
+            if (p.guid == _personalAbGuid && p.guid.startsWith('asystec-')) {
+              final endpoint = await bind.mainGetApiServer();
+              final owner = gFFI.userModel.userName.value;
+              final existing = addressbooks[p.name];
+              if (existing is! CloudAb || existing.profile.guid != p.guid ||
+                  existing.owner != owner || existing.endpoint != endpoint) {
+                addressbooks[p.name] = CloudAb(p, endpoint, owner);
+              }
+              await bind.mainSetLocalOption(key: CloudAb.locator(endpoint, owner), value: p.guid);
+            } else if (addressbooks.containsKey(p.name) && addressbooks[p.name] is! CloudAb) {
               addressbooks[p.name]?.setSharedProfile(p);
             } else {
               addressbooks[p.name] = Ab(p, p.guid == _personalAbGuid);
@@ -617,6 +636,7 @@ class AbModel {
   List<dynamic> _serializeCache() {
     var res = [];
     addressbooks.forEach((key, value) {
+      if (value is CloudAb) return;
       if (!value.isPersonal() && key != current.name()) return;
       res.add({
         "guid": value.sharedProfile()?.guid ?? '',
@@ -638,12 +658,34 @@ class AbModel {
     }
   }
 
+  Future<bool> _restoreCloud(String owner) async {
+    if (owner.isEmpty) return false;
+    final endpoint = await bind.mainGetApiServer();
+    final guid = bind.mainGetLocalOption(key: CloudAb.locator(endpoint, owner));
+    if (!guid.startsWith('asystec-')) return false;
+    final book = current;
+    if (book is! CloudAb || book.endpoint != endpoint || book.owner != owner ||
+        book.profile.guid != guid) {
+      final profile = AbProfile(guid, _personalAddressBookName, owner, null,
+          ShareRule.read.value, null);
+      final cloud = CloudAb(profile, endpoint, owner);
+      addressbooks[_personalAddressBookName] = cloud;
+      _currentName.value = _personalAddressBookName;
+      listInitialized = true;
+      cloud.initialized = true;
+      _refreshTab();
+    }
+    return true;
+  }
+
   Future<void> loadCache() async {
     try {
       if (_cacheLoadOnceFlag || currentAbLoading.value) return;
       _cacheLoadOnceFlag = true;
       final access_token = bind.mainGetLocalOption(key: 'access_token');
       if (access_token.isEmpty) return;
+      final info = bind.mainGetLocalOption(key: 'user_info');
+      if (info.isNotEmpty && await _restoreCloud(jsonDecode(info)['name'] ?? '')) return;
       final cache = await bind.mainLoadAb();
       if (currentAbLoading.value) return;
       final data = jsonDecode(cache);
@@ -788,6 +830,11 @@ class AbModel {
 
   // should not call this function in a loop call stack
   Future<void> pullNonLegacyAfterChange({String? name}) async {
+    final book = name == null ? current : addressbooks[name];
+    if (book is CloudAb) {
+      book.pullAbImpl(quiet: true);
+      return;
+    }
     if (name == null) {
       if (current.name() != _legacyAddressBookName) {
         return await current.pullAb(quiet: true);

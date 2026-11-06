@@ -39,15 +39,27 @@ class _AddressBookState extends State<AddressBook> {
 
   @override
   Widget build(BuildContext context) => Obx(() {
+        final book = gFFI.abModel.current;
         if (!gFFI.userModel.isLogin) {
           return Center(
               child: ElevatedButton(
                   onPressed: loginDialog, child: Text(translate("Login"))));
-        } else if (gFFI.userModel.networkError.isNotEmpty) {
+        } else if (gFFI.userModel.networkError.isNotEmpty && book is! CloudAb) {
           return netWorkErrorWidget();
         } else {
           return Column(
             children: [
+              if (book is CloudAb) Text(book.status.value),
+              if (book is CloudAb && book.conflicts.isNotEmpty)
+                Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
+                  Text('Cambio simultáneo · ${book.conflicts.first.substring(2)}'),
+                  Text('Nube: ${book.describeConflict(book.conflicts.first, local: false)}'),
+                  Text('Local: ${book.describeConflict(book.conflicts.first, local: true)}'),
+                  TextButton(onPressed: () => book.resolve(book.conflicts.first, false),
+                      child: const Text('Usar versión de la nube')),
+                  TextButton(onPressed: () => book.resolve(book.conflicts.first, true),
+                      child: const Text('Conservar mi cambio')),
+                ]),
               // NOT use Offstage to wrap LinearProgressIndicator
               if (gFFI.abModel.currentAbLoading.value &&
                   gFFI.abModel.currentAbEmpty)

@@ -10,7 +10,7 @@ para los servidores de Asystec. Licencia AGPL-3.0.
 
 - [Descargar la última versión de Asystec Desk para Windows](https://github.com/asystec-io/asystec-desk/releases/latest/download/Asystec-Desk-Setup.exe)
 - [Código completo del cliente](app/)
-- [Cambios y validación de la versión 0.1.3](desktop/RELEASE-0.1.3.md)
+- [Cambios y validación de la versión 0.1.4](desktop/RELEASE-0.1.4.md)
 - [Compilación y herramientas](desktop/README.md)
 
 La versión 0.1.3 simplifica el instalador: bienvenida con aviso al continuar
@@ -34,6 +34,10 @@ descritas en `desktop/README.md` y ejecuta desde la raíz:
 
 Los binarios y fuentes empaquetadas se distribuyen como archivos de la versión
 de GitHub; `dist/` y las cachés de compilación no se incorporan al historial Git.
+
+## Libreta personal en la nube
+
+La versión 0.1.4 permite sincronizar equipos, alias, etiquetas y notas entre PC de soporte. Consulta la [configuración de la API de la libreta](server/libreta/README.md) para crear una cuenta, conectar el cliente y probar cambios sin conexión.
 
 ## Infraestructura y antecedentes locales
 
@@ -138,7 +142,7 @@ Si aparece, desbloquea la configuración de red y guarda estos valores:
 | Servidor ID | `184.197.59.221` |
 | Servidor Relay | `184.197.59.221:21117` |
 | Clave / Key | `6o6MWnTv2Vh6l+1oCrfEnlUSNQmMXaaLpqctaNcCulg=` |
-| Servidor API | Dejar vacío |
+| Servidor API de la libreta Asystec Desk | `https://184.197.59.221` (incluido en el instalador de prueba) |
 
 La clave anterior es la **clave pública del servidor**, no una contraseña de
 acceso remoto. No se necesita iniciar sesión en una cuenta Pro. Para conectarse,

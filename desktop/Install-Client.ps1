@@ -70,6 +70,20 @@ try {
     $detailsScript = Join-Path $InstallDirectory 'Connection-Details.ps1'
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Connection-Details.ps1') -Destination $detailsScript -Force
     . $detailsScript
+    $profileData = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'profile.json') -Raw | ConvertFrom-Json
+    $api = [string]$profileData.api_server
+    if ($api) {
+        if (([uri]$api).Scheme -cne 'https') { throw 'La API de libreta requiere HTTPS.' }
+        Invoke-ConnectionCli $installed @('--option','api-server',$api) | Out-Null
+        $deadline = [DateTime]::UtcNow.AddSeconds(15)
+        do {
+            $actual = Invoke-ConnectionCli $installed @('--option','api-server')
+            if ($actual -ceq $api) { break }
+            Start-Sleep -Milliseconds 500
+        } while ([DateTime]::UtcNow -lt $deadline)
+        if ($actual -cne $api) { throw 'No se pudo verificar la direccion de la API de libreta.' }
+        Write-InstallLog "API de libreta verificada: $api"
+    }
     Initialize-ConnectionDetails $installed
     $programs = [Environment]::GetFolderPath('CommonPrograms')
     $shortcutDirectory = Join-Path $programs 'Asystec Desk'

@@ -74,8 +74,9 @@ def brand(source, profile, assets):
         "custom-rendezvous-server": profile["id_server"],
         "relay-server": profile["relay_server"],
         "key": profile["public_key"],
-        "api-server": profile["api_server"],
     }
+    if profile["api_server"]:
+        network["api-server"] = profile["api_server"]
     entries = ",\n".join(f"        ({quote(k)}.to_owned(), {quote(v)}.to_owned())" for k, v in network.items())
     replace(config,
             'pub static ref OVERWRITE_SETTINGS: RwLock<HashMap<String, String>> = Default::default();',

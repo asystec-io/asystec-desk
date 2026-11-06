@@ -57,10 +57,15 @@ try {
     $checks.installation_and_running_service_with_spaces = 'PASS'
     if ((Get-CimInstance Win32_Service -Filter "Name='Asystec Desk'").StartMode -ne 'Auto') { throw 'Servicio no automatico.' }
     $checks.automatic_startup = 'PASS'
-    foreach ($entry in @(@('custom-rendezvous-server',$profile.id_server),@('relay-server',$profile.relay_server),@('key',$profile.public_key),@('api-server',''))) {
+    foreach ($entry in @(@('custom-rendezvous-server',$profile.id_server),@('relay-server',$profile.relay_server),@('key',$profile.public_key),@('api-server',$profile.api_server))) {
         if ((Invoke-DeskCli @('--option',$entry[0])) -cne $entry[1]) { throw "Configuracion incorrecta: $($entry[0])" }
     }
-    $checks.compiled_server_key_relay_and_empty_api = 'PASS'
+    $checks.server_key_relay_and_api = 'PASS'
+    if ($profile.api_server) {
+        $probe = Invoke-WebRequest -UseBasicParsing -Uri ($profile.api_server + '/api/login-options') -TimeoutSec 20
+        if ($probe.StatusCode -ne 200 -or $probe.Content.Trim() -ne '[]') { throw 'Respuesta HTTPS de libreta inesperada.' }
+        $checks.address_book_https = 'PASS'
+    }
     $id = ''
     for ($i=0;$i -lt 40;$i++) {
         $id = Invoke-DeskCli @('--get-id')

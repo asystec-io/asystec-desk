@@ -47,6 +47,7 @@ spanish.FinishedLabelNoIcons=Asystec Desk est√° instalado y los datos de conexi√
 
 [Files]
 Source: "{#BundleDir}\*"; DestDir: "{tmp}\AsystecDeskPayload"; Excludes: "*.zip"; Flags: recursesubdirs createallsubdirs ignoreversion
+Source: "{#DesktopDir}\profile.json"; DestDir: "{tmp}"; Flags: ignoreversion
 Source: "{#DesktopDir}\Install-Client.ps1"; DestDir: "{tmp}"; Flags: ignoreversion
 Source: "{#DesktopDir}\Connection-Details.ps1"; DestDir: "{tmp}"; Flags: ignoreversion
 Source: "{#DesktopDir}\LICENSE.txt"; DestName: "Asystec-Desk-License.txt"; Flags: dontcopy
