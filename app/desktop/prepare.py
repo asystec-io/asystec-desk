@@ -125,6 +125,13 @@ def brand(source, profile, assets):
             "'Asystec Desk · basado en RustDesk\\nModificaciones Asystec, 26-10-2026 · AGPL-3.0',")
     replace("flutter/lib/common.dart", "0xFF2C8CFF", "0xFF064589", count=2)
     replace(settings, "0xFF2c8cff", "0xFF064589")
+    # The installed Windows client opens the existing credential viewer.
+    client = ROOT / "app" if (ROOT / "app").is_dir() else ROOT
+    for path in ("flutter/lib/desktop/pages/desktop_home_page.dart",
+                 "flutter/lib/utils/platform_channel.dart",
+                 "flutter/windows/runner/flutter_window.cpp"):
+        originals[path] = (source / path).read_text(encoding="utf-8")
+        shutil.copyfile(client / path, source / path)
     client_source = ROOT / "app" if (ROOT / "app").is_dir() else ROOT
     for path in ("flutter/lib/common/widgets/login.dart", "flutter/lib/common/widgets/book_registration.dart",
                  "flutter/lib/common/widgets/address_book.dart", "flutter/lib/models/user_model.dart",

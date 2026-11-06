@@ -369,6 +369,93 @@
  }
  
  Widget msgboxIcon(String type) {
+--- a/flutter/lib/desktop/pages/desktop_home_page.dart
++++ b/flutter/lib/desktop/pages/desktop_home_page.dart
+@@ -91,6 +91,19 @@
+       ),
+       buildTip(context),
+       if (!isOutgoingOnly) buildIDBoard(context),
++      if (!isOutgoingOnly && isWindows && bind.mainIsInstalled())
++        Align(
++          alignment: Alignment.centerLeft,
++          child: TextButton(
++            onPressed: () async {
++              if (!await RdPlatformChannel.instance.openConnectionDetails()) {
++                showToast('No se pudo abrir el visor. '
++                    'Revisá la instalación de Asystec Desk.');
++              }
++            },
++            child: const Text('Ver datos de conexión'),
++          ).marginOnly(left: 20, right: 11),
++        ),
+       if (!isOutgoingOnly) buildPasswordBoard(context),
+       FutureBuilder<Widget>(
+         future: Future.value(
+--- a/flutter/lib/utils/platform_channel.dart
++++ b/flutter/lib/utils/platform_channel.dart
+@@ -15,6 +15,12 @@
+ 
+   final MethodChannel _hostMethodChannel =
+       MethodChannel("org.rustdesk.rustdesk/host");
++
++  Future<bool> openConnectionDetails() async {
++    return await _hostMethodChannel
++            .invokeMethod<bool>('openConnectionDetails') ??
++        false;
++  }
+ 
+   /// Bump the position of the mouse cursor, if applicable
+   Future<bool> bumpMouse({required int dx, required int dy}) async {
+--- a/flutter/windows/runner/flutter_window.cpp
++++ b/flutter/windows/runner/flutter_window.cpp
+@@ -13,6 +13,8 @@
+ #include <flutter/standard_method_codec.h>
+ 
+ #include <windows.h>
++#include <shlobj.h>
++#include <shellapi.h>
+ 
+ #include <optional>
+ #include <memory>
+@@ -20,6 +22,25 @@
+ #include "win32_desktop.h"
+ 
+ namespace {
++
++bool OpenConnectionDetails(HWND owner) {
++  PWSTR programs = nullptr;
++  if (FAILED(SHGetKnownFolderPath(FOLDERID_CommonPrograms, 0, nullptr, &programs))) {
++    return false;
++  }
++  const std::wstring shortcut = std::wstring(programs) +
++      L"\\Asystec Desk\\Ver datos de conexion.lnk";
++  CoTaskMemFree(programs);
++
++  SHELLEXECUTEINFOW launch{};
++  launch.cbSize = sizeof(launch);
++  launch.fMask = SEE_MASK_FLAG_NO_UI;
++  launch.hwnd = owner;
++  launch.lpVerb = L"open";
++  launch.lpFile = shortcut.c_str();
++  launch.nShow = SW_SHOWNORMAL;
++  return ShellExecuteExW(&launch) != FALSE;
++}
+ 
+ // If the window is resized between the creation of the Flutter surface and the
+ // present of the first frame - which is what the PowerToys FancyZones option
+@@ -110,7 +131,11 @@
+     &flutter::StandardMethodCodec::GetInstance());
+ 
+   channel.SetMethodCallHandler(
+-    [](const flutter::MethodCall<>& call, std::unique_ptr<flutter::MethodResult<>> result) {
++    [this](const flutter::MethodCall<>& call, std::unique_ptr<flutter::MethodResult<>> result) {
++      if (call.method_name() == "openConnectionDetails") {
++        result->Success(OpenConnectionDetails(GetHandle()));
++        return;
++      }
+       if (call.method_name() == "bumpMouse") {
+         auto arguments = call.arguments();
+ 
 --- a/flutter/lib/common/widgets/login.dart
 +++ b/flutter/lib/common/widgets/login.dart
 @@ -12,6 +12,7 @@

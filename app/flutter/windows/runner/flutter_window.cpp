@@ -13,6 +13,8 @@
 #include <flutter/standard_method_codec.h>
 
 #include <windows.h>
+#include <shlobj.h>
+#include <shellapi.h>
 
 #include <optional>
 #include <memory>
@@ -20,6 +22,25 @@
 #include "win32_desktop.h"
 
 namespace {
+
+bool OpenConnectionDetails(HWND owner) {
+  PWSTR programs = nullptr;
+  if (FAILED(SHGetKnownFolderPath(FOLDERID_CommonPrograms, 0, nullptr, &programs))) {
+    return false;
+  }
+  const std::wstring shortcut = std::wstring(programs) +
+      L"\\Asystec Desk\\Ver datos de conexion.lnk";
+  CoTaskMemFree(programs);
+
+  SHELLEXECUTEINFOW launch{};
+  launch.cbSize = sizeof(launch);
+  launch.fMask = SEE_MASK_FLAG_NO_UI;
+  launch.hwnd = owner;
+  launch.lpVerb = L"open";
+  launch.lpFile = shortcut.c_str();
+  launch.nShow = SW_SHOWNORMAL;
+  return ShellExecuteExW(&launch) != FALSE;
+}
 
 // If the window is resized between the creation of the Flutter surface and the
 // present of the first frame - which is what the PowerToys FancyZones option
@@ -110,7 +131,11 @@ bool FlutterWindow::OnCreate() {
     &flutter::StandardMethodCodec::GetInstance());
 
   channel.SetMethodCallHandler(
-    [](const flutter::MethodCall<>& call, std::unique_ptr<flutter::MethodResult<>> result) {
+    [this](const flutter::MethodCall<>& call, std::unique_ptr<flutter::MethodResult<>> result) {
+      if (call.method_name() == "openConnectionDetails") {
+        result->Success(OpenConnectionDetails(GetHandle()));
+        return;
+      }
       if (call.method_name() == "bumpMouse") {
         auto arguments = call.arguments();
 

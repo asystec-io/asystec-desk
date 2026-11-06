@@ -91,6 +91,19 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       ),
       buildTip(context),
       if (!isOutgoingOnly) buildIDBoard(context),
+      if (!isOutgoingOnly && isWindows && bind.mainIsInstalled())
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton(
+            onPressed: () async {
+              if (!await RdPlatformChannel.instance.openConnectionDetails()) {
+                showToast('No se pudo abrir el visor. '
+                    'Revisá la instalación de Asystec Desk.');
+              }
+            },
+            child: const Text('Ver datos de conexión'),
+          ).marginOnly(left: 20, right: 11),
+        ),
       if (!isOutgoingOnly) buildPasswordBoard(context),
       FutureBuilder<Widget>(
         future: Future.value(
