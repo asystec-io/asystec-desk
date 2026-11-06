@@ -3,6 +3,8 @@ import sqlite3
 import tempfile
 import threading
 import unittest
+from unittest.mock import patch
+import hashlib
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.error import HTTPError
@@ -11,6 +13,7 @@ import json
 
 from werkzeug.serving import make_server
 from service import add_account, create_app
+from index_peers import export
 
 
 class SyncTest(unittest.TestCase):
@@ -60,6 +63,41 @@ class SyncTest(unittest.TestCase):
             self.sync(self.a)
         self.assertEqual(exc.exception.code, 403)
         exc.exception.close()
+
+    def test_install_enroll_only_registered_device_once_in_asystec(self):
+        with closing(sqlite3.connect(self.db)) as db:
+            add_account(db, 'asystec', 'local-test-password')
+        token = self.login('asystec')
+        self.guid = self.post('ab/personal', token)['guid']
+        hbbs = self.db.with_name('hbbs.sqlite')
+        index = self.db.with_name('index.json')
+        machine = '908013ac-68ef-446b-8766-358db11987c3'
+        with closing(sqlite3.connect(hbbs)) as db, db:
+            db.execute('CREATE TABLE peer(id TEXT,uuid BLOB,status INTEGER)')
+            db.execute('INSERT INTO peer VALUES(?,?,NULL)', ('123456789', machine.encode()))
+        export(hbbs, index)
+        data = dict(id='123456789', alias='CAJA-01', proof='0' * 64)
+        with patch.dict('os.environ', BOOK_ENROLL_GUID=self.guid, BOOK_PEER_INDEX=str(index)):
+            with self.assertRaises(HTTPError) as exc:
+                self.post('asystec/enroll', data=data)
+            self.assertEqual(exc.exception.code, 403)
+            exc.exception.close()
+            data['proof'] = hashlib.sha256(f"asystec-enroll-v1:123456789:{machine}".encode()).hexdigest()
+            def enroll():
+                req = Request(self.url+'asystec/enroll', json.dumps(data).encode(),
+                              {'Content-Type': 'application/json'})
+                with urlopen(req) as res:
+                    self.assertEqual((res.status, res.read()), (204, b''))
+            enroll()
+            key = 'p:123456789'
+            record = self.sync(token)['records'][key]
+            self.assertEqual(record, {'rev': 1, 'value': {'alias': 'CAJA-01', 'tags': [], 'note': ''}})
+            self.sync(token, {key: {'rev': 1, 'value': dict(record['value'], alias='Sucursal')}})
+            enroll()
+            self.assertEqual(self.sync(token)['records'][key]['value']['alias'], 'Sucursal')
+            self.sync(token, {key: {'rev': 2, 'value': None}})
+            enroll()
+            self.assertEqual(self.sync(token)['records'][key], {'rev': 3, 'value': None})
 
     def test_register_rejects_invalid_and_duplicate_credentials(self):
         for user, password, status in [('x', 'long-enough-password', 400),

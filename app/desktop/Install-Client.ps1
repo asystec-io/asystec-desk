@@ -4,7 +4,8 @@ param(
     [Parameter(Mandatory=$true)][string]$PayloadDirectory,
     [string]$InstallDirectory,
     [string]$LogPath,
-    [string]$ErrorPath
+    [string]$ErrorPath,
+    [switch]$EnrollInBook
 )
 $ErrorActionPreference = 'Stop'
 if (-not $LogPath) { $LogPath = Join-Path ([IO.Path]::GetTempPath()) ('Asystec-Desk-' + [Guid]::NewGuid().ToString('N') + '.log') }
@@ -70,6 +71,20 @@ try {
     $detailsScript = Join-Path $InstallDirectory 'Connection-Details.ps1'
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Connection-Details.ps1') -Destination $detailsScript -Force
     . $detailsScript
+    $profileData = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'profile.json') -Raw | ConvertFrom-Json
+    $api = [string]$profileData.api_server
+    if ($api) {
+        if (([uri]$api).Scheme -cne 'https') { throw 'La API de libreta requiere HTTPS.' }
+        Invoke-ConnectionCli $installed @('--option','api-server',$api) | Out-Null
+        $deadline = [DateTime]::UtcNow.AddSeconds(15)
+        do {
+            $actual = Invoke-ConnectionCli $installed @('--option','api-server')
+            if ($actual -ceq $api) { break }
+            Start-Sleep -Milliseconds 500
+        } while ([DateTime]::UtcNow -lt $deadline)
+        if ($actual -cne $api) { throw 'No se pudo verificar la direccion de la API de libreta.' }
+        Write-InstallLog "API de libreta verificada: $api"
+    }
     Initialize-ConnectionDetails $installed
     $programs = [Environment]::GetFolderPath('CommonPrograms')
     $shortcutDirectory = Join-Path $programs 'Asystec Desk'
@@ -81,6 +96,23 @@ try {
     $shortcut.WorkingDirectory = $InstallDirectory
     $shortcut.IconLocation = $installed + ',0'
     $shortcut.Save()
+    $taskName = 'Asystec Desk - Alta libreta'
+    if ($EnrollInBook) {
+        $worker = Join-Path $InstallDirectory 'Register-BookDevice.ps1'
+        Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Register-BookDevice.ps1') -Destination $worker -Force
+        Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'profile.json') -Destination (Join-Path $InstallDirectory 'Book-Profile.json') -Force
+        $ps = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
+        $arguments = '-NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "' + $worker + '"'
+        $action = New-ScheduledTaskAction -Execute $ps -Argument $arguments
+        $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 5)
+        $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+        Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings -User 'SYSTEM' -RunLevel Highest -Force | Out-Null
+        & $ps -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File $worker
+        if ($LASTEXITCODE -eq 0) { Write-InstallLog 'Alta en la libreta de Asystec confirmada.' }
+        else { Write-InstallLog 'Alta en la libreta de Asystec pendiente. Windows volvera a intentarlo.' }
+    } else {
+        Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
+    }
     Write-InstallLog 'Credenciales propias del equipo guardadas y autorizacion verificada.'
     Write-InstallLog 'SUCCESS: service and installed executable verified.'
     exit 0

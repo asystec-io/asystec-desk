@@ -60,7 +60,7 @@
     "desktop/assets/logo_light.png": "87a8598d86b3e8814ebd18c8eb62a0ffd3b295254df322990741329a3c2d5010",
     "desktop/assets/tray-icon.ico": "065bed3ba9a871568bf113605fb70e88fcc96147049c39b8dd3f962cf6f18f1e",
     "desktop/assets/wizard.png": "4362e29787b8ef6e34e041f3269e4a866636fd99ffd663f2404af6b8f117dc37",
-    "desktop/Asystec-Desk.iss": "e082a58239fddb1d21edc5597a192f5df8802bdbbc822a5aad1c6d5f545513e7",
+    "desktop/Asystec-Desk.iss": "c16eb93ea7e214b02b0caf9383f61d3d7b77960533f12945b8e26409d8449064",
     "desktop/branding/asystec-desk_hoja-de-marca_1920x1080.png": "149271601d25b9dbaaa0b922f03caaa2f5722372bb1348037291f2b134736d44",
     "desktop/branding/asystec-desk_mockup_barra-y-ventana_1920x1080.png": "c9d227dc17e7b56a0f1e45e81ca1a5bac3e6afdb71ef1be8c5dc58994c0e5301",
     "desktop/branding/favicon/favicon-16x16.png": "e4985af09ba15db79721f4863947596f176521283a1edab9f230a227bd32ef40",
@@ -121,12 +121,12 @@
     "desktop/Connect-QASandbox.ps1": "ba7d361dd462e0610a6cef61e341efe5a0590dbd438619eb14e45b8da251995a",
     "desktop/Connection-Details.ps1": "f519f630a4d3e60aa7244737a001af07c94085adabc5272196ee98a429fdc1a6",
     "desktop/Enter-BuildEnvironment.ps1": "dd15cec67b8cecbccd945f252262be2c6bc4c38bdf2fd3ce0bf994a7e4f2da6a",
-    "desktop/Install-Client.ps1": "4b74f5594e14b135874dd8e3c12f9c90bda8daa291001e3ceab85e312187b6c7",
+    "desktop/Install-Client.ps1": "99e6782ad18448fc6073912fe8fdc715d86dbc8e1df589b7521607f8dfa0ed2b",
     "desktop/LICENSE.txt": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
     "desktop/make_assets.py": "7adf5313fe27814436b5ef7a5870d9ec90ec482b156a4894913f2dcd1f9f7c85",
     "desktop/package.py": "4bc4a7e14331c4e22ca3c63bd3b3cf39e2d654b27d64e0c337ad3a5a2d48e203",
     "desktop/prepare.py": "b9b23cef6dd775446f283fed7212f51cea38af2e70f080e910c7f3321c730b6d",
-    "desktop/profile.json": "16591e8374099575f6b810a66c5474026d2c020b301276a87b7fa63fc2738d77",
+    "desktop/profile.json": "e2b9ac32e391f79a13fb6315c536865cef40356bddd723b9fa584bdc505796b8",
     "desktop/README.md": "4795e0e8fea660722fc2120643c867b76e46fe28b7afe3e681e090b6643654be",
     "desktop/RELEASE-0.1.0.md": "917a95db8b11e9ca7d73e1aa24b14be6ba800407dac3077fae9e89032db220a6",
     "desktop/RELEASE-0.1.1-rc.1.md": "34761675e8e228ca42558a55650752ecb5e5d8afabe466625009e1b7e2b6a627",
@@ -1187,7 +1187,8 @@
     "src/whiteboard/windows.rs": "d7354f564e1521c557afc6d78d6b368bf4ae3dda54876d7850d9e954ccbb5060",
     "vcpkg.json": "76d14241ec7f6adfba265a217f3b9c27adf47ed8c600085615756934fc155ef3",
     "flutter/lib/common/widgets/book_registration.dart": "5e3638ebd7ee43a7f57714eb4da3aada7fe5e4f6114be60b46777f265a6b288f",
-    "flutter/test/book_registration_test.dart": "776f6544959946a27049b2d29ab1b5ed0e9cb1ca1a7eb14ed740d134a875acfb"
+    "flutter/test/book_registration_test.dart": "776f6544959946a27049b2d29ab1b5ed0e9cb1ca1a7eb14ed740d134a875acfb",
+    "desktop/Register-BookDevice.ps1": "89d9e896d4e9691b54ae8308d6203b0f569d6a84689d7b7c926444fd74c0666c"
   },
-  "at_utc": "2026-11-06T18:22:46.682619+00:00"
+  "at_utc": "2026-11-06T18:45:40.596983+00:00"
 }

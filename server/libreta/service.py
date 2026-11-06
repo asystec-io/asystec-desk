@@ -1,6 +1,7 @@
 """Asystec Desk personal address book. Run behind an HTTPS reverse proxy."""
 import getpass
 import hashlib
+import json
 import os
 import re
 import secrets
@@ -53,6 +54,7 @@ def create_app(database=None):
     @app.errorhandler(401)
     @app.errorhandler(403)
     @app.errorhandler(413)
+    @app.errorhandler(503)
     def error_response(error):
         return jsonify(error=error.description), error.code
 
@@ -170,6 +172,39 @@ def create_app(database=None):
                     db.execute('INSERT OR REPLACE INTO entry VALUES(?,?,?,?)', (name, key, rev, app.json.dumps(value)))
                     records[key] = dict(rev=rev, value=value)
         return jsonify(records=records, conflicts=conflicts)
+
+    @app.post('/api/asystec/enroll')
+    def enroll():
+        data = body()
+        if set(data) != {'id', 'alias', 'proof'}:
+            abort(400)
+        peer, alias, proof = data['id'], data['alias'], data['proof']
+        if (not isinstance(peer, str) or not re.fullmatch(r'[0-9]{6,16}', peer)
+                or not isinstance(alias, str) or not 1 <= len(alias) <= 63
+                or not all(c.isalnum() or c in '.-_' for c in alias)
+                or not isinstance(proof, str) or not re.fullmatch(r'[a-f0-9]{64}', proof)):
+            abort(400)
+        guid = os.environ.get('BOOK_ENROLL_GUID')
+        if not guid:
+            abort(503)
+        try:
+            snapshot = Path(os.environ.get('BOOK_PEER_INDEX', '/run/asystec-enroll/peers.json'))
+            with snapshot.open(encoding='utf-8') as stream:
+                if time.time() - os.fstat(stream.fileno()).st_mtime > 180:
+                    abort(503)
+                expected = json.load(stream).get(peer, '')
+        except (OSError, ValueError):
+            abort(503)
+        if not secrets.compare_digest(expected, token_digest(proof)):
+            abort(403)
+        with connection() as db:
+            db.execute('BEGIN IMMEDIATE')
+            if not db.execute('SELECT 1 FROM account WHERE name=? AND guid=?',
+                              ('asystec', guid)).fetchone():
+                abort(503)
+            db.execute('INSERT OR IGNORE INTO entry VALUES(?,?,1,?)',
+                       ('asystec', 'p:' + peer, app.json.dumps(dict(alias=alias, tags=[], note=''))))
+        return '', 204
 
     return app
 

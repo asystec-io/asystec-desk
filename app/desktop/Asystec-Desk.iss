@@ -11,8 +11,8 @@
 [Setup]
 AppId=AsystecDeskBootstrap
 AppName=Asystec Desk
-AppVersion=0.1.6
-VersionInfoVersion=0.1.6.0
+AppVersion=0.1.7
+VersionInfoVersion=0.1.7.0
 AppPublisher=Asystec
 AppPublisherURL=https://asystec.io
 DefaultDirName={autopf}\Asystec Desk
@@ -46,10 +46,14 @@ spanish.WelcomeLabel2=Este asistente instalará Asystec Desk en tu equipo.%n%nSo
 spanish.FinishedLabel=Asystec Desk está instalado y los datos de conexión están listos.%n%nAl pulsar Finalizar se abrirá la ventana para copiar el ID y la contraseña. También podrás abrirla desde Inicio > Asystec Desk > Ver datos de conexion.
 spanish.FinishedLabelNoIcons=Asystec Desk está instalado y los datos de conexión están listos.%n%nAl pulsar Finalizar se abrirá la ventana para copiar el ID y la contraseña. También podrás abrirla desde Inicio > Asystec Desk > Ver datos de conexion.
 
+[Tasks]
+Name: "enrollbook"; Description: "Agregar el ID y el nombre de esta PC a la libreta de soporte de Asystec"
+
 [Files]
 Source: "{#BundleDir}\*"; DestDir: "{tmp}\AsystecDeskPayload"; Excludes: "*.zip"; Flags: recursesubdirs createallsubdirs ignoreversion
 Source: "{#DesktopDir}\Install-Client.ps1"; DestDir: "{tmp}"; Flags: ignoreversion
 Source: "{#DesktopDir}\Connection-Details.ps1"; DestDir: "{tmp}"; Flags: ignoreversion
+Source: "{#DesktopDir}\Register-BookDevice.ps1"; DestDir: "{tmp}"; Flags: ignoreversion
 Source: "{#DesktopDir}\LICENSE.txt"; DestName: "Asystec-Desk-License.txt"; Flags: dontcopy
 
 [Run]
@@ -138,6 +142,8 @@ begin
     OperationLog := GetTempDir + 'Asystec-Desk-' + GetDateTimeString('yyyymmdd-hhnnss', '-', ':') + '-' + IntToStr(Random(1000000)) + '.log';
     Log('Registro de instalacion: ' + OperationLog);
     Arguments := '-NoProfile -ExecutionPolicy Bypass -File "' + ExpandConstant('{tmp}\Install-Client.ps1') + '" -PayloadDirectory "' + ExpandConstant('{tmp}\AsystecDeskPayload') + '" -InstallDirectory "' + ExpandConstant('{commonpf64}\Asystec Desk') + '" -LogPath "' + OperationLog + '"';
+    if WizardIsTaskSelected('enrollbook') then
+      Arguments := Arguments + ' -EnrollInBook';
     if not Exec(ExpandConstant('{sysnative}\WindowsPowerShell\v1.0\powershell.exe'), Arguments, ExpandConstant('{tmp}'), SW_HIDE, ewWaitUntilTerminated, ResultCode) then
       RaiseException('No se pudo iniciar la instalacion de Asystec Desk.');
     if ResultCode <> 0 then

@@ -2,6 +2,12 @@
 
 Cada técnico tiene una cuenta. Puede iniciar sesión en varias PC y sincronizar ID, alias, etiquetas y notas. Las contraseñas de acceso remoto se administran en cada equipo. Esta versión admite la libreta personal.
 
+### Alta de equipos durante la instalación
+
+Desde la versión 0.1.7, el instalador ofrece agregar el ID y el nombre de la PC a la libreta de `asystec`. La opción viene marcada. Si el equipo está sin conexión o el servidor aún no ha reconocido su ID, Windows reintenta al minuto y después cada cinco minutos hasta recibir confirmación. Una reinstalación conserva las ediciones y eliminaciones de soporte. Para excluir un equipo, desmarcá la opción o usá `/MERGETASKS="!enrollbook"` en una instalación silenciosa.
+
+Después de desplegar la API y sus reglas Nginx con `deploy.sh`, ejecutá `sudo bash enable-enrollment.sh` en el servidor HBBS. El script vincula el alta a la cuenta existente por su identificador y crea el temporizador `asystec-peer-index.timer`. Ese índice contiene verificadores derivados de los equipos registrados en HBBS. El instalador envía una prueba derivada del identificador de Windows, junto con el ID de soporte y el nombre del equipo, por HTTPS. El alta no entrega una sesión ni permite leer la libreta. Para suspender las altas, desactivá el temporizador y retirale al servicio de libreta la variable `BOOK_ENROLL_GUID` antes de reiniciarlo.
+
 ## Prueba con el servidor Asystec
 
 El instalador configura `https://184.197.59.221` (instancia Lightsail `asystec-desk`). En la primera PC, abre **Libreta → Iniciar sesión → Crear cuenta**, elige un usuario y una contraseña de 12 a 128 caracteres y confirma el registro. La aplicación inicia sesión y abre tu libreta personal. En la segunda PC, inicia sesión con los mismos datos. Al agregar un equipo a la libreta en una PC, aparecerá en la otra.

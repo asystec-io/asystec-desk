@@ -5,7 +5,7 @@
   "id_server": "184.197.59.221",
   "relay_server": "184.197.59.221:21117",
   "public_key": "6o6MWnTv2Vh6l+1oCrfEnlUSNQmMXaaLpqctaNcCulg=",
-  "api_server": "",
+  "api_server": "https://184.197.59.221",
   "release_status": "DEVELOPMENT_ONLY",
   "upstream": {
     "version": "1.5.0",
